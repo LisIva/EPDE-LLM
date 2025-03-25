@@ -1,0 +1,16 @@
+.venv
+.idea
+*.docx
+*.pdf
+venv/
+
+creds.py
+dummy-script.py
+chern.py
+Найденные уравнения.txt
+
+Lib/
+Scripts/
+pyvenv.cfg
+share/
+epde/
