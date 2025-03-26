@@ -26,6 +26,7 @@ class BaseTokenConverter(object):
             if pool.max_deriv_pow[key] < self.power:
                 pool.max_deriv_pow[key] = self.power
 
+        pool.terms_max_num += 0.5
         if self.token == 'u':
             set_derivs_pow('data_fun_pow')
             return 'u'
@@ -36,11 +37,12 @@ class BaseTokenConverter(object):
             set_tx_power('x')
             return 'x'
         else:
+            pool.terms_max_num += 0.5
             set_derivs_pow('deriv_fun_pow')
             if self.token == 'du_dt':
-                return 'du/dx1'
+                return 'du/dx0'
             elif self.token == 'du_dx':
-                return 'du/dx2'
+                return 'du/dx1'
             elif len(self.token) == 7:
                 return self.__convert_high_deriv(pool)
 
@@ -48,9 +50,10 @@ class BaseTokenConverter(object):
         var = self.token[-2]
         n = int(self.token[-1])
 
+        pool.terms_max_num += n-1.0
         if pool.max_deriv_orders[f'max_deriv_{var}'] < n:
             pool.set_max_d_order(f'max_deriv_{var}', n)
-        return f'd^{n}u/dx1^{n}' if var == 't' else f'd^{n}u/dx2^{n}'
+        return f'd^{n}u/dx0^{n}' if var == 't' else f'd^{n}u/dx1^{n}'
 
 
 class FunConverter(object):
@@ -69,6 +72,7 @@ class FunConverter(object):
 
     def convert(self, pool):
         if self.correct_function:
+            pool.terms_max_num += 0.5
             if pool.special_tokens_pow.get(self.term) is not None:
                 if pool.special_tokens_pow[self.term][0] > self.power:
                     pool.set_special_token_pow(self.term, self.power, pool.special_tokens_pow[self.term][1])
@@ -149,11 +153,9 @@ class SolutionTranslator(object):
 
     def translate(self):
         cached_pool = self.llm_pool.deepcopy()
+        cached_pool.terms_max_num = 0.0
         left_side = ' = ' + BaseTokenConverter(self.left_deriv, 1).convert(cached_pool) + '{power: 1.0}'
         add_str = []
-
-        if cached_pool.terms_max_num < len(self.sympy_code.args):
-            cached_pool.terms_max_num = len(self.sympy_code.args)
 
         if self.sympy_code.is_Add:
             for mul_term in self.sympy_code.args:
@@ -161,7 +163,7 @@ class SolutionTranslator(object):
                 if converted_term is None:
                     return None
                 add_str.append(converted_term)
-            self.llm_pool.from_copy(cached_pool)
+            self.llm_pool.from_cache(cached_pool)
             return " + ".join(add_str) + left_side
 
         elif self.sympy_code.is_Mul:
@@ -169,7 +171,7 @@ class SolutionTranslator(object):
             if converted_term is None:
                 return None
             else:
-                self.llm_pool.from_copy(cached_pool)
+                self.llm_pool.from_cache(cached_pool)
                 return converted_term + left_side
         else:
             raise Exception('Unexpected form in sympy structure: could not find Add or Mul to convert')
@@ -185,13 +187,16 @@ if __name__ == '__main__':
                  'du/dt = c[0] * du/dx + c[1] * du/dt * d^2u/dx^2': (1.75, 542.9853705131861),
                  'du/dt = c[0] * du/dx + c[1] * t * du/dx': (1.2, 442.49077370655203)}
     rs1 = 'params[0] * derivs_dict["du/dx"] ** 3 * t + ((params[1] * derivs_dict["du/dx"] ** 2 * np.cos(params[2] * t +1)) * x**2) * u +params[3] * derivs_dict["du/dt"] * (t**2 + 2)'
-    rs2 = 'params[0] * derivs_dict["d^2u/dt^2"] ** 2 * t**3 + (params[1] * derivs_dict["du/dx"] * np.arcsin(params[2] * t**2)) * x**3 * u**5'
-    rs3 = 'params[0] * np.arcsin(1.67335*t**2)'
-
+    rs2 = 'params[0] * derivs_dict["d^2u/dt^2"] ** 2 * t**3 + params[1] * derivs_dict["du/dx"] * np.arcsin(params[2] * t**2) * x**3 * u**5'
+    rs3 = 'params[0] * np.arcsin(1.67335*t**2*x)'
+    qqq = 1 + 1 + 0.5
     llm_pool = LLMPool()
+
     st1 = SolutionTranslator(rs1, np.array([1.2, 5.678, 6.5421, 4.12]), llm_pool, 'sindy-burg').translate()
-    st2 = SolutionTranslator(rs2, np.array([2.1, 10.1, 9.2]), llm_pool, 'sindy-burg').translate()
     st3 = SolutionTranslator(rs3, np.array([2.1, ]), llm_pool, 'sindy-burg').translate()
+
+    st2 = SolutionTranslator(rs2, np.array([2.1, 10.1, 9.2]), llm_pool, 'sindy-burg').translate()
+
     epde_classes, lambda_strs = llm_pool.to_epde_classes()
 
     rs5 = 'params[0] * np.sqrt(u)'
