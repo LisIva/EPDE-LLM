@@ -187,14 +187,11 @@ if __name__ == '__main__':
                  'du/dt = c[0] * du/dx + c[1] * du/dt * d^2u/dx^2': (1.75, 542.9853705131861),
                  'du/dt = c[0] * du/dx + c[1] * t * du/dx': (1.2, 442.49077370655203)}
     rs1 = 'params[0] * derivs_dict["du/dx"] ** 3 * t + ((params[1] * derivs_dict["du/dx"] ** 2 * np.cos(params[2] * t +1)) * x**2) * u +params[3] * derivs_dict["du/dt"] * (t**2 + 2)'
-    rs2 = 'params[0] * derivs_dict["d^2u/dt^2"] ** 2 * t**3 + params[1] * derivs_dict["du/dx"] * np.arcsin(params[2] * t**2) * x**3 * u**5'
+    rs2 = 'params[0] * derivs_dict["d^2u/dt^2"] ** 2 * t**3 + params[1] * derivs_dict["du/dx"] * np.arcsin(params[2] * t**2) * x**3'
     rs3 = 'params[0] * np.arcsin(1.67335*t**2*x)'
-    qqq = 1 + 1 + 0.5
     llm_pool = LLMPool()
-
-    st1 = SolutionTranslator(rs1, np.array([1.2, 5.678, 6.5421, 4.12]), llm_pool, 'sindy-burg').translate()
     st3 = SolutionTranslator(rs3, np.array([2.1, ]), llm_pool, 'sindy-burg').translate()
-
+    st1 = SolutionTranslator(rs1, np.array([1.2, 5.678, 6.5421, 4.12]), llm_pool, 'sindy-burg').translate()
     st2 = SolutionTranslator(rs2, np.array([2.1, 10.1, 9.2]), llm_pool, 'sindy-burg').translate()
 
     epde_classes, lambda_strs = llm_pool.to_epde_classes()

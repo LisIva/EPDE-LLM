@@ -33,11 +33,11 @@ class OptManager:
     def explore_solutions(self):
         self.step_0()
         for num in tqdm(range(self.start_iter, min(self.refine_point, self.max_iter)), desc="LLM's progress"):
-            new_prompt, score, str_equation, params = self.step_n("prompts/continue-iter.txt", num)
+            new_prompt, score, str_equation, params = self.step_n("continue-iter.txt", num)
 
     def refine_solutions(self):
         for num in tqdm(range(min(self.refine_point, self.start_iter), self.max_iter), desc="LLM's progress"):
-            new_prompt, score, str_equation, params = self.step_n("prompts/continue-iter-refinement.txt", num)
+            new_prompt, score, str_equation, params = self.step_n("continue-iter-refinement.txt", num)
 
     def step_0(self):
         if self.start_iter == 0:
@@ -46,7 +46,7 @@ class OptManager:
                     if not self.debug:
                         clean_output_dir()
                     reset_prompt_to_init()
-                    new_prompt, score, str_equation, params = self.perform_step(path="prompts/zero-iter.txt", num=0)
+                    new_prompt, score, str_equation, params = self.perform_step(file_name="zero-iter.txt", num=0)
                     self.start_iter = 1
                     break
                 except Exception as e:
@@ -67,11 +67,11 @@ class OptManager:
             return None, None, None, None
         return new_prompt, score, str_equation, params
 
-    def perform_step(self, path, num):
+    def perform_step(self, file_name, num):
         if self.debug:
             response = get_debug_response(num=num)
         else:
-            response = get_response(prompt_path=path, num=num, dir_name=self.dir_name, print_info=False)
+            response = get_response(file_name=file_name, num=num, dir_name=self.dir_name, print_info=False)
         score, eq_string, params = self.evaluator.llm_response_eval(response, self.eq_buffer)
-        new_prompt, old_prompt = rebuild_prompt(eq_string, score, response, num=num, path=path)
+        new_prompt, old_prompt = rebuild_prompt(eq_string, score, response, num=num, file_name=file_name)
         return new_prompt, score, eq_string, params

@@ -7,7 +7,8 @@ np.set_printoptions(threshold=sys.maxsize)
 # import tensorly as tl
 # from tensorly.decomposition import tensor_train
 
-PARENT_PATH = Path().absolute().parent
+
+PARENT_PATH = Path(os.path.dirname(__file__)).parent
 # дописать write_file для class Data
 
 

@@ -3,8 +3,10 @@ from pathlib import Path
 from data.models_desc import models
 import creds
 from promptconstructor.combine_txts import read_with_langchain
+import os
 
 MODEL = "qwen/qwen-2-72b-instruct"
+PARENT_PATH = Path(os.path.dirname(__file__)).parent
 
 
 def info(prompt, response, model_response):
@@ -21,15 +23,17 @@ def info(prompt, response, model_response):
 
 
 def get_debug_response(num=0):
-    with open(f"debug_llm_outputs/out_{num}.txt") as debug:
+    file_path = os.path.join(PARENT_PATH, "pipeline", "debug_llm_outputs",  f"out_{num}.txt")
+    with open(file_path) as debug:
         data = debug.read()
     return data
 
 
-def get_response(prompt_path="prompts/continue-iter.txt", num=0, dir_name='burg', print_info=False):
+def get_response(file_name="continue-iter.txt", num=0, dir_name='burg', print_info=False):
     client = OpenAI(
         api_key=creds.api_key, base_url="https://api.vsegpt.ru/v1")
 
+    prompt_path = os.path.join(PARENT_PATH, "pipeline", "prompts", file_name)
     prompt = read_with_langchain(path=prompt_path, dir_name=dir_name) # 2446 base len
     messages = [{"role": "user", "content": prompt}]
     response_big = client.chat.completions.create(
@@ -44,7 +48,9 @@ def get_response(prompt_path="prompts/continue-iter.txt", num=0, dir_name='burg'
     if print_info:
         print("Response:", response)
         info(prompt, response, response_big)
-    with open(f"debug_llm_outputs/out_{num}.txt", 'w', encoding="utf-8") as model_out:
+
+    write_path = os.path.join(PARENT_PATH, "pipeline", "debug_llm_outputs",  f"out_{num}.txt")
+    with open(write_path, 'w', encoding="utf-8") as model_out:
         model_out.write(response)
     return response
 

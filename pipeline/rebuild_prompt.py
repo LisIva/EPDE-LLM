@@ -1,5 +1,10 @@
 import re
-from extract_llm_response import retrieve_notes, compose_equation_v1_fun
+from pipeline.extract_llm_response import retrieve_notes, compose_equation_v1_fun
+from pathlib import Path
+import os
+
+
+PARENT_PATH = Path(os.path.dirname(__file__)).parent
 
 
 def extract_exp_buffer(path, content=None):
@@ -68,7 +73,8 @@ def create_new_file(start_pos, end_pos, new_dict_str, response, continue_content
 
     new_buff_file = continue_content[:start_pos] + new_dict_str + continue_content[end_pos:]
 
-    if num == 0: path = "prompts/continue-iter.txt"
+    if num == 0:
+        path = os.path.join(PARENT_PATH, "pipeline", "prompts", "continue-iter.txt")
     if write_file:
         with open(path, 'w') as prompt:
             prompt.write(new_buff_file)
@@ -88,12 +94,14 @@ def retrieve_copy_exp_buff(next_path, copy_from, num):
         return start_pos_next, end_pos_next, dict_str_next, file_content_next
 
 
-def rebuild_prompt(insert_eq_str, value, response, path="prompts/continue-iter.txt", num=0):
+def rebuild_prompt(insert_eq_str, value, response, file_name="continue-iter.txt", num=0):
     if len(insert_eq_str) > 250:
         raise Exception('The composed equation has an unaccepted structure: len(insert_eq_str) > 250')
 
+    path = os.path.join(PARENT_PATH, "pipeline", "prompts",  file_name)
+    copy_from = os.path.join(PARENT_PATH, "pipeline", "prompts",  "continue-iter.txt")
     start_pos, end_pos, dict_str, file_content = retrieve_copy_exp_buff(next_path=path,
-                                                                        copy_from="prompts/continue-iter.txt",
+                                                                        copy_from=copy_from,
                                                                         num=num)
     if is_duplicate(insert_eq_str, dict_str):
         print(f'LLM generated a duplicate on iter #{num}')
