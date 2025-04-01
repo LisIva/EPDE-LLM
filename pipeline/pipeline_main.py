@@ -1,7 +1,7 @@
 from pipeline.optimization_workflow.optimization_manager import OptManager
 
 max_iter = 8
-dir_name = 'sindy-burg'
+dir_name = 'burg_sindy'
 start_iter = 0
 refine_point = 100
 
