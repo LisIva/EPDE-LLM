@@ -26,7 +26,6 @@ class BaseTokenConverter(object):
             if pool.max_deriv_pow[key] < self.power:
                 pool.max_deriv_pow[key] = self.power
 
-        pool.terms_max_num += 0.5
         if self.token == 'u':
             set_derivs_pow('data_fun_pow')
             return 'u'
@@ -37,7 +36,6 @@ class BaseTokenConverter(object):
             set_tx_power('x')
             return 'x'
         else:
-            pool.terms_max_num += 0.5
             set_derivs_pow('deriv_fun_pow')
             if self.token == 'du_dt':
                 return 'du/dx0'
@@ -50,7 +48,6 @@ class BaseTokenConverter(object):
         var = self.token[-2] if token_len == 7 else self.token[-3]
         n = int(self.token[-1])
 
-        pool.terms_max_num += n-1.0
         if pool.max_deriv_orders[f'max_deriv_{var}'] < n:
             pool.set_max_d_order(f'max_deriv_{var}', n)
         return f'd^{n}u/dx0^{n}' if var == 't' else f'd^{n}u/dx1^{n}'
@@ -72,7 +69,6 @@ class FunConverter(object):
 
     def convert(self, pool):
         if self.correct_function:
-            pool.terms_max_num += 0.5
             if pool.special_tokens_pow.get(self.term) is not None:
                 if pool.special_tokens_pow[self.term][0] > self.power:
                     pool.set_special_token_pow(self.term, self.power, pool.special_tokens_pow[self.term][1])
@@ -116,8 +112,8 @@ class MulConverter(object):
     def to_epde(self):
         if self.mul_term.is_Float:
             return str(self.mul_term)
-        mul_str = [str(self.mul_term.args[0]), ]
 
+        mul_str = [str(self.mul_term.args[0]), ]
         if self.llm_pool.factors_max_num < len(self.mul_term.args)-1:
             self.llm_pool.factors_max_num = len(self.mul_term.args)-1
 
@@ -156,7 +152,6 @@ class SolutionTranslator(object):
 
     def translate(self):
         cached_pool = self.llm_pool.deepcopy()
-        # cached_pool.terms_max_num = 0.0
         left_side = ' = ' + BaseTokenConverter(self.left_deriv, 1).convert(cached_pool) + '{power: 1.0}'
         add_str = []
 

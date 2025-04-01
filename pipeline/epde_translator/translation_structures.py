@@ -13,15 +13,14 @@ class LLMPool(object):
 
         self.special_tokens_pow = {}  # key: как епде будет выводить токен юзеру, val - лямбда-функция как его посчитать
         self.factors_max_num = 1
-        self.terms_max_num = 0
+        self.terms_max_num = 1
 
     def from_cache(self, cached_pool):
         self.simple_tokens_pow = cached_pool.simple_tokens_pow
         self.max_deriv_orders = cached_pool.max_deriv_orders
         self.special_tokens_pow = cached_pool.special_tokens_pow
         self.factors_max_num = cached_pool.factors_max_num
-        if self.terms_max_num < cached_pool.terms_max_num:
-            self.terms_max_num = cached_pool.terms_max_num
+        self.terms_max_num = cached_pool.terms_max_num
         self.max_deriv_pow = cached_pool.max_deriv_pow
 
     def deepcopy(self):
