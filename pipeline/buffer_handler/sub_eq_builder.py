@@ -19,6 +19,7 @@ class Equation(object):
         self.feq_str = f'{left_deriv} = {eq_str}'
         self.feq_code = sample_code(eq_code, self.feq_str, P)
         self.P = P
+        self.rs_code = eq_code
 
 
 # не может перерабатывать уравнения, в которых c[..] названы иначе

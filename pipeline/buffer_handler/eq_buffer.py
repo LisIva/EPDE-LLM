@@ -25,6 +25,6 @@ class EqBuffer(object):
         self.records_track[key] = Record(key, eq_code, loss, complex_score, relat_score, params, rs_code)
         self.full_records_track[key] = Record(key, eq_code, loss, complex_score, relat_score, params, rs_code)
 
-    def push_subset_record(self, key, complex_score, relat_score, loss, eq_code, params):
+    def push_subset_record(self, key, complex_score, relat_score, loss, eq_code, params, rs_code=None):
         self.full_opt_track[key] = (complex_score, relat_score)
-        self.full_records_track[key] = Record(key, eq_code, loss, complex_score, relat_score, params)
+        self.full_records_track[key] = Record(key, eq_code, loss, complex_score, relat_score, params, rs_code)

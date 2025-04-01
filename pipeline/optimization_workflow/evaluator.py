@@ -40,10 +40,10 @@ class Evaluator(object):
         relat_score = eval_error / np.mean(np.fabs(u_t)) * 1000
         return complex_score, relat_score, loss, params
 
-    def pruner_eval(self, eq_code, eq_str, P, eq_buffer):
+    def pruner_eval(self, eq_code, eq_str, P, eq_buffer, rs_code):
         exec(eq_code, globals())
         complex_score, relat_score, loss, params = self.get_eval_scores(eq_str, P)
-        eq_buffer.push_subset_record(eq_str, complex_score, relat_score, loss, eq_code, params)
+        eq_buffer.push_subset_record(eq_str, complex_score, relat_score, loss, eq_code, params, rs_code)
         return complex_score, relat_score, params
 
     def llm_response_eval(self, response, eq_buffer):

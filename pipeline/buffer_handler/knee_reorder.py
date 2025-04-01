@@ -193,6 +193,13 @@ class KneeReorder(object):
             else:
                 by_projection[item[0]] = -project_score
         # proj_scores_sorted = SortedDict(projection_scores, reverse=True)
+
+        # TODO: временное решение для пустого словаря
+        if len(projection_scores) == 0:
+            by_p = SortedDict(by_projection, reverse=True)
+            best_candidate = by_p.get_top_n(1)[0]
+            return SortedDict({best_candidate[0]: best_candidate[1]}), by_p
+
         return SortedDict(projection_scores, reverse=True), SortedDict(by_projection, reverse=True)
 
 
