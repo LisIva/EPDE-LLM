@@ -28,21 +28,23 @@ if __name__ == '__main__':
     grids = np.meshgrid(t, x, indexing='ij')
 
     ''' Parameters of the experiment '''
-    max_iter_number = 1
+    max_iter_number = 5
     ''''''
 
     i = 0
-    while i < max_iter_number:
-        epde_search_obj = epde.EpdeSearch(use_solver=False, boundary=boundary,
-                                              dimensionality=dimensionality, coordinate_tensors=grids,
-                                              prune_domain=False)
+    epde_search_obj = epde.EpdeSearch(use_solver=False, boundary=boundary,
+                                      dimensionality=dimensionality, coordinate_tensors=grids,
+                                      prune_domain=False)
 
-        epde_search_obj.set_moeadd_params(population_size=5, training_epochs=5)
+    epde_search_obj.set_moeadd_params(population_size=5, training_epochs=5)
+
+    while i < max_iter_number:
+
         start = time.time()
 
         epde_search_obj.fit(data=u, max_deriv_order=(2, 2),
                             equation_terms_max_number=3, equation_factors_max_number=1,
-                            eq_sparsity_interval=(1e-08, 5))
+                            eq_sparsity_interval=(1e-08, 5), additional_tokens=[])
         end = time.time()
         epde_search_obj.equations(only_print=True, only_str=False, num=2)
         res = epde_search_obj.equations(only_print=False, only_str=False, num=2)

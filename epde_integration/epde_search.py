@@ -62,6 +62,11 @@ class EpdeSearcher(object):
         factors_max_num = max(epde_params[self._dir_name]['equation_factors_max_number'], self.llm_pool.factors_max_num)
 
         i = 0
+        # p1 = epde_params[self._dir_name]['eq_sparsity_interval']
+        # p2 = self.__get_additional_tokens()
+        # p3 = max(1, self.llm_pool.max_deriv_pow['data_fun_pow'])
+        # p4 = max(1, self.llm_pool.max_deriv_pow['deriv_fun_pow'])
+        # p5 = self.population
         while i < self.__max_iter:
             start = time.time()
             self.epde_search_obj.fit(data=self.u, max_deriv_order=self.__get_max_deriv_order(),

@@ -65,7 +65,9 @@ class CustomTokenConverter(object):
     def get_cache_token(self):
         lambda_signature = 'grids[0]' if self.token == 't' else 'grids[1]'
         lambda_str = f"lambda *grids, **kwargs: ({lambda_signature}) ** kwargs['power']"
-        eval_fun = {self.token: lambda_str}
+
+        lambda_fun = eval(lambda_str, {'np': np, })
+        eval_fun = {self.token: lambda_fun}
         evaluator = CustomEvaluator(eval_fun, eval_fun_params_labels=['power'])
         params_ranges = {'power': (self.power[0], self.power[1])}
         return CustomTokens(token_type=self.token, token_labels=[self.token],
