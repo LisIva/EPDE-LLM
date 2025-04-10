@@ -111,3 +111,9 @@ class EpdeSearcher(object):
         for eq_u in self.__eq_epde_str:
             self.population.append(translate_equation(eq_u, pool=self.epde_search_obj.pool, all_vars=['u', ]))
 
+        for soeq in self.population:
+            for eq in soeq.vals:
+                eq.main_var_to_explain = 'u'
+                meta1 = eq.metaparameters
+                ppp = eq.metaparameters[('sparsity', eq.main_var_to_explain)]['value']
+        print()

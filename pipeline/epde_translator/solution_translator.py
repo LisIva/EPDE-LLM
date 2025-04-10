@@ -142,6 +142,12 @@ class MulConverter(object):
         return ' * '.join(mul_str)
 
 
+def rearrange_list(ls: list):
+    head, tail = ls[0], ls[-1]
+    ls[0], ls[-1] = tail, head
+    return ls
+
+
 class SolutionTranslator(object):
     def __init__(self, rs_code, params, llm_pool: LLMPool, dir_name: str):
         sym_converter = SympyConverter(rs_code, params)
@@ -165,6 +171,9 @@ class SolutionTranslator(object):
                     return None
                 add_str.append(converted_term)
             self.llm_pool.from_cache(cached_pool)
+
+            if self.sympy_code.args[0].is_Float:
+                add_str = rearrange_list(add_str)
             return " + ".join(add_str) + left_side
 
         elif self.sympy_code.is_Mul:

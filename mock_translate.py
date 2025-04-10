@@ -48,10 +48,14 @@ if __name__ == '__main__':
     boundary = 10
     dimensionality = u.ndim
     grids = np.meshgrid(t, x, indexing='ij')
-    eq_u = '20. * u{power: 1} + -1. * d^2u/dx0^2{power: 1} + 0 = d^2u/dx1^2{power: 1}'
-    start = time.time()
+    # eq_u = '20. * u{power: 1} + -1. * d^2u/dx0^2{power: 1} + 0 = d^2u/dx1^2{power: 1}'
+    eq_u = '0.017083710392065486 * u{power: 1.0} + 0.0004237250964155818 * du/dx1{power: 1.0} + -1.0586354035340615 = d^2u/dx0^2{power: 1.0}'
+    # -1.0586354035340615 * du/dx1{power: 1.0} + 0.0004237250964155818 * u{power: 1.0} + 0.017083710392065486 = d^2u/dx0^2{power: 1.0}
+    # 0.017083710392065486 * u{power: 1.0} + 0.0004237250964155818 * du/dx1{power: 1.0} + -1.0586354035340615 = d^2u/dx0^2{power: 1.0}
+    # {'sparsity': {'optimizable': True, 'value': 1.0}, 'terms_number': {'optimizable': False, 'value': 3}, 'max_factors_in_term': {'optimizable': False, 'value': 1}}
+    # start = time.time()
     test = translate_dummy_eqs(grids[0], grids[1], u, eq_u, diff_method='FD', bnd=boundary)
     end = time.time()
-    time1 = end - start
-    print('Overall time is:', time1)
+    # time1 = end - start
+    # print('Overall time is:', time1)
     print()
