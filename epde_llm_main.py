@@ -22,7 +22,10 @@ if __name__ == '__main__':
     pruned_track, _ = opt_manager.call_pruner()
     full_records_track = opt_manager.eq_buffer.full_records_track
     data = opt_manager.evaluator.data['inputs'] # "inputs": [raw_data['t'], raw_data['x'], raw_data['u']]
-
+    # 'd^2u/dt^2 = c[0] * du/dx + c[1]*x + c[2]'
+    # 'd^2u/dt^2 = .000423725096 * du/dx + 0.0170837104*x + -1.05863540'
+    # -1.0586354035340615 * du/dx1 + 0.0004237250964155818 * x + 0.017083710392065486
+    # {'sparsity': {'optimizable': True, 'value': 1.0}, 'terms_number': {'optimizable': False, 'value': 3}, 'max_factors_in_term': {'optimizable': False, 'value': 1}}
     epde_searcher = EpdeSearcher(data, full_records_track, pruned_track, dir_name, use_init_population=True)
     epde_searcher.fit()
     print()

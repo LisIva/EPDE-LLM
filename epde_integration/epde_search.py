@@ -3,6 +3,8 @@ from epde.interface.equation_translator import translate_equation
 from epde_integration.hyperparameters import epde_params
 from pipeline.epde_translator.sol_track_translator import SolTrackTranslator
 import time
+from epde_eq_parse.eq_evaluator import evaluate_fronts
+from epde_eq_parse.eq_parser import clean_parsed_out
 
 
 def get_epde_search_obj(grids, dir_name, diff_method='FD'):
@@ -62,11 +64,8 @@ class EpdeSearcher(object):
         factors_max_num = max(epde_params[self._dir_name]['equation_factors_max_number'], self.llm_pool.factors_max_num)
 
         i = 0
-        # p1 = epde_params[self._dir_name]['eq_sparsity_interval']
-        # p2 = self.__get_additional_tokens()
-        # p3 = max(1, self.llm_pool.max_deriv_pow['data_fun_pow'])
-        # p4 = max(1, self.llm_pool.max_deriv_pow['deriv_fun_pow'])
-        # p5 = self.population
+        clean_parsed_out(self._dir_name)
+        run_eq_info = []
         while i < self.__max_iter:
             start = time.time()
             self.epde_search_obj.fit(data=self.u, max_deriv_order=self.__get_max_deriv_order(),
@@ -81,10 +80,13 @@ class EpdeSearcher(object):
             end = time.time()
             self.epde_search_obj.equations(only_print=True, only_str=False, num=epde_params[self._dir_name]['num'])
             res = self.epde_search_obj.equations(only_print=False, only_str=False, num=epde_params[self._dir_name]['num'])
+            iter_info = evaluate_fronts(res, self._dir_name, i)
+            run_eq_info += iter_info
 
             print('Overall time is, s:', end-start)
             print(f'Iterations processed: {i + 1}/{self.__max_iter}\n')
             i += 1
+        return run_eq_info
 
     def __get_additional_tokens(self):
         if len(self.__additional_classes) == 0 and epde_params[self._dir_name]['additional_tokens'] is None:
