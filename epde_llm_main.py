@@ -27,5 +27,6 @@ if __name__ == '__main__':
     # -1.0586354035340615 * du/dx1 + 0.0004237250964155818 * x + 0.017083710392065486
     # {'sparsity': {'optimizable': True, 'value': 1.0}, 'terms_number': {'optimizable': False, 'value': 3}, 'max_factors_in_term': {'optimizable': False, 'value': 1}}
     epde_searcher = EpdeSearcher(data, full_records_track, pruned_track, dir_name, use_init_population=True)
-    epde_searcher.fit()
+    run_eq_info = epde_searcher.fit()
+
     print()

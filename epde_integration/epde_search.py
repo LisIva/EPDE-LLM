@@ -80,7 +80,7 @@ class EpdeSearcher(object):
             end = time.time()
             self.epde_search_obj.equations(only_print=True, only_str=False, num=epde_params[self._dir_name]['num'])
             res = self.epde_search_obj.equations(only_print=False, only_str=False, num=epde_params[self._dir_name]['num'])
-            iter_info = evaluate_fronts(res, self._dir_name, i)
+            iter_info = evaluate_fronts(res, self._dir_name, end-start, i)
             run_eq_info += iter_info
 
             print('Overall time is, s:', end-start)

@@ -18,13 +18,13 @@ def get_terms_with_coeffs(terms, right):
     for term in terms:
         idx = term.find(' * ')
         pure_term = term[idx + 3:]
-        coeff = float(term[:idx])
         if idx != -1:
+            coeff = float(term[:idx])
             if np.fabs(coeff) > 0.00000001:
                 terms_coeffs[pure_term] = coeff
         else:
             C_exists = True
-            terms_coeffs['C'] = coeff
+            terms_coeffs['C'] = float(term)
 
     if not C_exists:
         terms_coeffs['C'] = 0.0
