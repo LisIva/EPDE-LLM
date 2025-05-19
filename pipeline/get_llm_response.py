@@ -31,7 +31,8 @@ def get_debug_response(num=0):
 
 def get_response(file_name="continue-iter.txt", num=0, dir_name='burg', print_info=False):
     client = OpenAI(
-        api_key=creds.api_key, base_url="https://api.vsegpt.ru/v1")
+        api_key=creds.api_key,
+        base_url="https://api.vsegpt.ru/v1")
 
     prompt_path = os.path.join(PARENT_PATH, "pipeline", "prompts", file_name)
     prompt = read_with_langchain(path=prompt_path, dir_name=dir_name) # 2446 base len

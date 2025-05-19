@@ -40,10 +40,12 @@ class EqSplitter(object):
 
     def get_pretty_terms(self):
         for i, term in enumerate(self.terms):
-            tokens = term.split('*')
+            self.terms[i] = term.replace('**', '&')
+            tokens = self.terms[i].split('*')
             self.terms[i] = ' * '.join(tokens)
+            self.terms[i] = self.terms[i].replace('&', '**')
 
-            tokens = term.split('+')
+            tokens = self.terms[i].split('+')
             self.terms[i] = ' + '.join(tokens)
         return self.terms
 

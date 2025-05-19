@@ -160,7 +160,7 @@ class KneeReorder(object):
 
     def find_end_point(self):
         candidates = self._by_knee.get_top_p(0.3)
-        max_idx = self._by_eval.get_max_idx(candidates)
+        max_idx = max(self._by_eval.get_max_idx(candidates), 1)
 
         end_point_key, end_point_score = candidates[0][0], 0
         for key, knee_score in candidates:

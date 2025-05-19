@@ -34,12 +34,12 @@ class SubEqSet(object):
         parent_key, _ = AssociativeBracesHandler(parent_key).open_braces()
         parent_code, _ = AssociativeBracesHandler(parent_code).open_braces()
 
+        self.parent_terms_str = EqSplitter(parent_key).get_pretty_terms()
         if P != 1:
-            self.parent_terms_str = EqSplitter(parent_key).get_pretty_terms()
             self.parent_terms_code = EqSplitter(parent_code).get_terms()
             self.subset = self.form_subset()
         else:
-            self.subset = [Equation(parent_key, parent_code, P, self.left_deriv), ]
+            self.subset = [Equation(self.parent_terms_str[0], parent_code, P, self.left_deriv), ]
 
     def get_params_ids(self):
         c_ids = []
@@ -75,6 +75,8 @@ class SubEqSet(object):
                 eq_code = [self.parent_terms_code[i] for i in terms_id]
                 c_ids = [c_ids_all[i] for i in terms_id]
                 params_ids = [params_ids_all[i] for i in terms_id]
+                if self.is_identity_eq(eq_str):
+                    continue
 
                 # rename the c[..] and params[..] by correct order and create an equation
                 coef_reorder = CoeffReorder(eq_str, eq_code, c_ids, params_ids, total_param_size)
@@ -83,6 +85,14 @@ class SubEqSet(object):
         else:
             print("Total number of params exceeds 10, the equation can't have a subset")
         return eq_subset
+
+    def is_identity_eq(self, eq_str):
+        if len(eq_str) == 1:
+            cleaned_from_left = eq_str[0].replace(self.left_deriv, '')
+            if cleaned_from_left.find('u') == -1:
+                return True
+        return False
+
 
 
 class CoeffReorder(object):
