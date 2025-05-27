@@ -6,20 +6,17 @@ from epde_eq_parse.eq_evaluator import EqEvaluator, EqInfo
 
 class StructEvaluator(object):
     def __init__(self, dir_name, params, eq_str):
-        struct_conv = StructConverter(eq_str, params)
+        left_side = schemas[dir_name]['left_side']
+        struct_conv = StructConverter(eq_str, params, left_side)
         self.dir_name = dir_name
         self.terms_with_coeffs = struct_conv.convert()
 
 
     def evaluate(self, loss, runtime, iter_num):
-        is_correct_schema = check_schema(schemas[self.dir_name]['schema'], self.terms_with_coeffs)
-        if is_correct_schema:
-            eq_eval = EqEvaluator(self.dir_name, self.terms_with_coeffs)
-            mae = eq_eval.eval_mae()
-            shd = eq_eval.eval_shd()
-            return EqInfo(self.terms_with_coeffs, loss, mae, shd, runtime, iter_num)
-        else:
-            return None
+        eq_eval = EqEvaluator(self.dir_name, self.terms_with_coeffs)
+        mae = eq_eval.eval_mae(True)
+        shd = eq_eval.eval_shd(False)
+        return EqInfo(self.terms_with_coeffs, loss, mae, shd, runtime, iter_num)
 
 class TrackEvaluator(object):
     def __init__(self, dir_name, records_track, pruned_track, runtime, iter_num):

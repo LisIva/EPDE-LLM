@@ -22,38 +22,51 @@ class EqEvaluator(object):
     def __init__(self, dir_name, terms_with_coeffs):
         self.dir_name = dir_name
         self.terms_with_coeffs = terms_with_coeffs
+        self.is_correct_schema = check_schema(schemas[dir_name]['schema'], terms_with_coeffs)
 
         correct_cfs_set = schemas[dir_name]['params']
         idx = self.get_correct_coeffs_idx(correct_cfs_set)
         self.correct_coeffs = correct_cfs_set[idx]
 
     def get_correct_coeffs_idx(self, correct_cfs_set):
-        coeff_idx, min_diff = 0, 1000000
-        for i, coeff_set in enumerate(correct_cfs_set):
-            coeff_difference = 0.0
-            for key in coeff_set.keys():
-                coeff_difference += np.fabs(np.fabs(coeff_set[key]) - np.fabs(self.terms_with_coeffs[key]))
+        if self.is_correct_schema:
+            coeff_idx, min_diff = 0, 1000000
+            for i, coeff_set in enumerate(correct_cfs_set):
+                coeff_difference = 0.0
+                for key in coeff_set.keys():
+                    coeff_difference += np.fabs(np.fabs(coeff_set[key]) - np.fabs(self.terms_with_coeffs[key]))
 
-            if coeff_difference < min_diff:
-                min_diff = coeff_difference
-                coeff_idx = i
-        return coeff_idx
+                if coeff_difference < min_diff:
+                    min_diff = coeff_difference
+                    coeff_idx = i
+            return coeff_idx
+        else: return 0
 
-    def eval_mae(self):
-        mae1, mae2 = 0.0, 0.0
-        for key in self.terms_with_coeffs.keys():
-            mae1 += np.fabs(self.correct_coeffs.get(key, 0.0) - self.terms_with_coeffs[key])
-            mae2 += np.fabs(-self.correct_coeffs.get(key, 0.0) - self.terms_with_coeffs[key])
-        mae = min(mae1, mae2)
-        return mae / len(self.terms_with_coeffs)
+    # возможно не учитывает левую часть ур-я - как минимум при оценке ллм (а надо!)
+    def eval_mae(self, eval_incorrect_eq=False):
+        if self.is_correct_schema:
+            mae1, mae2 = 0.0, 0.0
+            for key in self.terms_with_coeffs.keys():
+                mae1 += np.fabs(self.correct_coeffs.get(key, 0.0) - self.terms_with_coeffs[key])
+                mae2 += np.fabs(-self.correct_coeffs.get(key, 0.0) - self.terms_with_coeffs[key])
+            mae = min(mae1, mae2)
+            return mae / len(self.terms_with_coeffs)
+        elif eval_incorrect_eq:
+            mae = 0.
+            for key in self.terms_with_coeffs.keys():
+                mae += np.fabs(self.terms_with_coeffs.get(key, 0.0) - self.correct_coeffs.get(key, 0.0))
+            return mae / len(self.terms_with_coeffs)
+        return None
 
-    def eval_shd(self):
+    def eval_shd(self, has_coefficient=True):
         correct_coeffs_set = set(self.correct_coeffs.keys())
         terms_with_coeffs_set = set(self.terms_with_coeffs.keys())
 
         delete_wrong_set = terms_with_coeffs_set.difference(correct_coeffs_set)
         add_correct_set = correct_coeffs_set.difference(terms_with_coeffs_set)
-        return len(add_correct_set) + len(delete_wrong_set)
+        shd = len(add_correct_set) + len(delete_wrong_set)
+        return shd if has_coefficient else shd - 1
+
 
 
 class FrontReranker(object):

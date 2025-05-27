@@ -2,10 +2,11 @@ import re
 import numpy as np
 
 class StructConverter(object):
-    def __init__(self, eq_str, params):
+    def __init__(self, eq_str, params, left_side):
         self.eq_key = eq_str
         self.eq_str = eq_str
         self.params = params
+        self.left_side = left_side
         self.terms_dict = None
 
     def convert(self):
@@ -24,8 +25,8 @@ class StructConverter(object):
                 break
 
     def replace_x_and_t(self):
-        self.eq_str.replace('x', 'x2')
-        self.eq_str.replace('t', 'x1')
+        self.eq_str = self.eq_str.replace('x', 'x1')
+        self.eq_str = self.eq_str.replace('t', 'x0')
 
     def get_dict_terms(self):
         left_right = self.eq_str.split(' = ')
@@ -43,6 +44,9 @@ class StructConverter(object):
                 coef = 1.0
             term = term[idx+1:].strip()
             terms_dict[term] = coef
+
+        terms_dict[self.left_side] = -1.
+        terms_dict['C'] = 0.
         return terms_dict
 
     def replace_with_params(self):
