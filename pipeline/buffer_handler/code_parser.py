@@ -115,9 +115,11 @@ class RSExtractor(object):
         first_line_pos = self.cut_text.find("\n")
 
         # extract rs_code according to its format
-        if self.has_multiline(first_line_pos, self.cut_text):
+        if self.has_indirect_multiline(first_line_pos, self.cut_text):
+            self.extract_indirect_multiline(first_line_pos)
+        elif self.has_multiline(first_line_pos, self.cut_text): # devided by "\\"
             self.rs_code = self.extract_multiline(first_line_pos)
-        elif self.has_split_code(first_line_pos, self.cut_text):
+        elif self.has_split_code(first_line_pos, self.cut_text): # multiple "right_side ="
             self.rs_code = self.extract_split_code(first_line_pos)
         else:
             self.rs_code = self.extract_code(first_line_pos)
@@ -133,6 +135,18 @@ class RSExtractor(object):
         return begin_pos, end_pos
 
     @staticmethod
+    def has_indirect_multiline(first_line_pos, text):
+        first_line = text[:first_line_pos]
+        return first_line.count('(') != first_line.count(')')
+
+    def extract_indirect_multiline(self, line_pos):
+        rs_code = self.cut_text
+        while self.has_indirect_multiline(line_pos, rs_code):
+            rs_code = rs_code[:line_pos - 1] + rs_code[line_pos + 1:]
+            line_pos = rs_code[line_pos + 1:].find("\n") + line_pos + 1
+        return rs_code[len("right_side="):line_pos]
+
+    @staticmethod
     def has_multiline(first_line_pos, text):
         return text[first_line_pos - 1] == '\\'
 
@@ -142,7 +156,7 @@ class RSExtractor(object):
 
     def extract_multiline(self, line_pos):
         rs_code = self.cut_text
-        while self.has_multiline(rs_code, line_pos):
+        while self.has_multiline(line_pos, rs_code):
             rs_code = rs_code[:line_pos - 1] + rs_code[line_pos + 1:]
             line_pos = rs_code[line_pos + 1:].find("\n") + line_pos + 1
         return rs_code[len("right_side="):line_pos]
@@ -260,7 +274,10 @@ class AssociativeBracesHandler(object):
         for s in b_starts:
             e = find_pair(s, b_ends)
             b_pairs.append((s, e))
-            b_ends.remove(e)
+            try:
+                b_ends.remove(e)
+            except ValueError:
+                pass
         sorted_pairs = sorted(b_pairs, key=lambda x: x[1] - x[0], reverse=True)
         return b_pairs[::-1], sorted_pairs
 

@@ -29,18 +29,17 @@ class EqEvaluator(object):
         self.correct_coeffs = correct_cfs_set[idx]
 
     def get_correct_coeffs_idx(self, correct_cfs_set):
-        if self.is_correct_schema:
-            coeff_idx, min_diff = 0, 1000000
-            for i, coeff_set in enumerate(correct_cfs_set):
-                coeff_difference = 0.0
-                for key in coeff_set.keys():
-                    coeff_difference += np.fabs(np.fabs(coeff_set[key]) - np.fabs(self.terms_with_coeffs[key]))
+        coeff_idx, min_diff = 0, 1000000
+        for i, coeff_set in enumerate(correct_cfs_set):
+            coeff_difference = 0.0
+            overall_key_set = set(coeff_set.keys()).union(set(self.terms_with_coeffs.keys()))
+            for key in overall_key_set:
+                coeff_difference += np.fabs(coeff_set.get(key, 0.0) - self.terms_with_coeffs.get(key, 0.0))
 
-                if coeff_difference < min_diff:
-                    min_diff = coeff_difference
-                    coeff_idx = i
-            return coeff_idx
-        else: return 0
+            if coeff_difference < min_diff:
+                min_diff = coeff_difference
+                coeff_idx = i
+        return coeff_idx
 
     # возможно не учитывает левую часть ур-я - как минимум при оценке ллм (а надо!)
     def eval_mae(self, eval_incorrect_eq=False):
@@ -55,17 +54,18 @@ class EqEvaluator(object):
             mae = 0.
             for key in self.terms_with_coeffs.keys():
                 mae += np.fabs(self.terms_with_coeffs.get(key, 0.0) - self.correct_coeffs.get(key, 0.0))
-            return mae / len(self.terms_with_coeffs)
+            return mae / len(self.terms_with_coeffs) if self.terms_with_coeffs['C'] > 0.000000001 else (
+                   mae / (len(self.terms_with_coeffs) - 1))
         return None
 
-    def eval_shd(self, has_coefficient=True):
+    def eval_shd(self):
         correct_coeffs_set = set(self.correct_coeffs.keys())
         terms_with_coeffs_set = set(self.terms_with_coeffs.keys())
 
         delete_wrong_set = terms_with_coeffs_set.difference(correct_coeffs_set)
         add_correct_set = correct_coeffs_set.difference(terms_with_coeffs_set)
         shd = len(add_correct_set) + len(delete_wrong_set)
-        return shd if has_coefficient else shd - 1
+        return shd
 
 
 

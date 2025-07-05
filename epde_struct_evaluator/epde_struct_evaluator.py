@@ -1,7 +1,7 @@
 from epde_eq_parse.eq_parser import check_schema
 from epde_eq_parse.schemas import schemas
 from epde_struct_evaluator.structure_converter import StructConverter
-from epde_eq_parse.eq_evaluator import EqEvaluator, EqInfo
+from epde_eq_parse.eq_evaluator import EqEvaluator, EqInfo, FrontReranker
 
 
 class StructEvaluator(object):
@@ -15,7 +15,7 @@ class StructEvaluator(object):
     def evaluate(self, loss, runtime, iter_num):
         eq_eval = EqEvaluator(self.dir_name, self.terms_with_coeffs)
         mae = eq_eval.eval_mae(True)
-        shd = eq_eval.eval_shd(False)
+        shd = eq_eval.eval_shd()
         return EqInfo(self.terms_with_coeffs, loss, mae, shd, runtime, iter_num)
 
 class TrackEvaluator(object):
@@ -31,6 +31,13 @@ class TrackEvaluator(object):
         for eq_key in self.pruned_track.keys():
             struct_conv = StructEvaluator(self.dir_name, self.records_track[eq_key].params, eq_key)
             eq_info = struct_conv.evaluate(self.records_track[eq_key].loss, self.runtime, self.iter_num)
-            print()
-        print()
+            run_eq_info.append(eq_info)
+
+        best_eq_info = []
+        if len(run_eq_info) != 0:
+            front_r = FrontReranker(run_eq_info)
+            return front_r.select_best()
+        else:
+            print('An empty list of equations was received from the LLM')
+            return None
 
