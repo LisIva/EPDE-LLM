@@ -14,3 +14,4 @@ Scripts/
 pyvenv.cfg
 share/
 epde/
+epde_eq_parse/parsed_eqs

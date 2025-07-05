@@ -34,17 +34,17 @@ if __name__ == '__main__':
     run_eq_info = []
 
     epde_search_obj = epde.EpdeSearch(use_solver=False, boundary=boundary,
-                                      dimensionality=dimensionality, coordinate_tensors=grids)
+                                      coordinate_tensors=grids)
 
-    epde_search_obj.set_moeadd_params(population_size=8, training_epochs=90)
+    epde_search_obj.set_moeadd_params(population_size=8, training_epochs=100)
 
     while i < max_iter_number:
 
         start = time.time()
         try:
             epde_search_obj.fit(data=u, max_deriv_order=(1, 3),
-                                equation_terms_max_number=4, equation_factors_max_number=2,
-                                eq_sparsity_interval=(1e-08, 1e-06))
+                                equation_terms_max_number=5, equation_factors_max_number=2,
+                                eq_sparsity_interval=(1e-08, 1e-03))
         except IndexError:
             continue
 
@@ -53,14 +53,12 @@ if __name__ == '__main__':
         res = epde_search_obj.equations(only_print=False, only_str=False, num=4)
         iter_info = evaluate_fronts(res, dir_name, end - start, i)
 
-        with open('res.pickle', 'wb') as file:
-            pickle.dump(res, file)
-
         front_r = FrontReranker(iter_info)
         run_eq_info.append(front_r.select_best())
 
         time1 = end-start
         print('Overall time is:', time1)
+        print('Number of found eqs:', len(iter_info))
         print(f'Iteration processed: {i+1}/{max_iter_number}')
         i += 1
 
