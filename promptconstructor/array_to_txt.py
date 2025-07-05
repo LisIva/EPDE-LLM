@@ -133,7 +133,7 @@ def write_file(t, x, u, u_t, u_x, show_symnum=False):
             myf.write(f'{ti} {xi} {ui} {u_ti} {u_xi}\n')
 
     if show_symnum:
-        with open("burg_txu_derivs.txt", 'r') as myf:
+        with open("burg_txu_derivs.txt", 'r', encoding='utf-8') as myf:
             content = myf.read()
             print("Количество символов:", len(content))
 

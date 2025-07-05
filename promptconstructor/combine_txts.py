@@ -15,14 +15,14 @@ if 'pipeline' in PARENT_PATH.parts:
 
 def read_eq_data(name):
     abs_path = os.path.join(PARENT_PATH, "promptconstructor", f"{name}_txu_derivs.txt")
-    with open(abs_path, 'r') as myf:
+    with open(abs_path, 'r', encoding='utf-8') as myf:
         data = myf.read()
     return data
 
 
 def read_simple_burg():
     abs_path = os.path.join(PARENT_PATH, "promptconstructor", "burg_txu_derivs.txt")
-    with open(abs_path, 'r') as myf:
+    with open(abs_path, 'r', encoding='utf-8') as myf:
         data = myf.read()
     return data
 
@@ -38,7 +38,7 @@ def get_simple_burg_prompt():
 
 def read_with_langchain(dir_name='burg', path=None):
     data = read_eq_data(dir_name)
-    with open(path, 'r') as myf:
+    with open(path, 'r', encoding='utf-8') as myf:
         prompt_raw = myf.read()
 
     prompt_template = PromptTemplate.from_template(prompt_raw)
@@ -53,7 +53,7 @@ def test_read_with_langchain(prompt_name="points-set-prompt3.txt", dir_name='bur
     data = read_eq_data(dir_name)
     # path = os.path.join(PARENT_PATH, "prompts", "text-llms", prompt_name)
     path = 'reset-for-continue.txt'
-    with open(path, 'r') as myf:
+    with open(path, 'r', encoding='utf-8') as myf:
         prompt_raw = myf.read()
 
     prompt_template = PromptTemplate.from_template(prompt_raw)

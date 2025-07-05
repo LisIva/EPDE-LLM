@@ -9,7 +9,7 @@ PARENT_PATH = Path(os.path.dirname(__file__)).parent
 
 def extract_exp_buffer(path, content=None):
     if content is None:
-        with open(path) as prompt_file:
+        with open(path, encoding='utf-8') as prompt_file:
             content = prompt_file.read()
     start_str = "exp_buffer = {{\n"
     start_pos = content.find(start_str) + len(start_str)

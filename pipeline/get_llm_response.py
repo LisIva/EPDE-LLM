@@ -24,7 +24,7 @@ def info(prompt, response, model_response):
 
 def get_debug_response(num=0):
     file_path = os.path.join(PARENT_PATH, "pipeline", "debug_llm_outputs",  f"out_{num}.txt")
-    with open(file_path) as debug:
+    with open(file_path, encoding='utf-8') as debug:
         data = debug.read()
     return data
 
