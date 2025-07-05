@@ -24,18 +24,18 @@ if __name__ == '__main__':
     grids = np.meshgrid(t, x, indexing='ij')
 
     ''' Parameters of the experiment '''
-    max_iter_number = 50
+    max_iter_number = 100
 
     i = 0
     clean_parsed_out(dir_name)
     run_eq_info = []
 
     epde_search_obj = epde.EpdeSearch(use_solver=False, boundary=boundary,
-                                      dimensionality=dimensionality, coordinate_tensors=grids,
+                                      coordinate_tensors=grids,
                                       prune_domain=False)
 
     epde_search_obj.set_moeadd_params(population_size=8, training_epochs=7)
-
+    alg_runtime = 0
     while i < max_iter_number:
 
         start = time.time()
@@ -54,10 +54,13 @@ if __name__ == '__main__':
         run_eq_info.append(front_r.select_best())
 
         time1 = end-start
-        print('Overall time is:', time1)
+        alg_runtime += time1
+        print('Iter time is:', time1)
+        print('Number of found eqs:', len(iter_info))
         print(f'Iteration processed: {i+1}/{max_iter_number}')
         i += 1
 
+    print('Overall alg time is:', alg_runtime)
     eq_r = EqReranker(run_eq_info, dir_name)
     eq_r.best_run_inf = run_eq_info
     eq_r.to_csv()

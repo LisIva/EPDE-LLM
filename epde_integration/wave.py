@@ -37,7 +37,7 @@ if __name__ == '__main__':
     run_eq_info = []
 
     epde_search_obj = epde.EpdeSearch(use_solver=False, boundary=boundary,
-                                      dimensionality=dimensionality, coordinate_tensors=grids,
+                                      coordinate_tensors=grids,
                                       prune_domain=False)
     epde_search_obj.set_moeadd_params(population_size=5, training_epochs=5)
 
