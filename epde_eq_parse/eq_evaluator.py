@@ -42,7 +42,6 @@ class EqEvaluator(object):
             return coeff_idx
         else: return 0
 
-    # возможно не учитывает левую часть ур-я - как минимум при оценке ллм (а надо!)
     def eval_mae(self, eval_incorrect_eq=False):
         if self.is_correct_schema:
             mae1, mae2 = 0.0, 0.0
@@ -143,6 +142,11 @@ def evaluate_fronts(pareto_fronts, dir_name, runtime, iter_num):
                 shd = eq_eval.eval_shd()
                 eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, mae, shd, runtime, iter_num)
                 # shd, time, iter_num)
+                iter_eq_info.append(eq_info)
+                save_equation(eq_info, dir_name, iter_num)
+            elif dir_name == "burg_sindy" and soeq.obj_fun[0] < 0.026:
+                print("Some unknown equation with low obj_fun found")
+                eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, 1000000, 1000000, runtime, iter_num)
                 iter_eq_info.append(eq_info)
                 save_equation(eq_info, dir_name, iter_num)
     return iter_eq_info
