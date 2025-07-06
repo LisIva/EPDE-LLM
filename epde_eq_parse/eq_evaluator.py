@@ -9,13 +9,14 @@ import os
 
 PARENT_PATH = Path(os.path.dirname(__file__)).parent
 class EqInfo(object):
-    def __init__(self, terms_with_coeffs, obj_val, mae, shd, runtime, iter_num):
+    def __init__(self, terms_with_coeffs, obj_val, mae, shd, runtime, iter_num, is_correct=False):
         self.terms_with_coeffs = terms_with_coeffs
         self.obj_val = obj_val
         self.mae = mae
         self.shd = shd
         self.iter_num = iter_num
         self.runtime = runtime
+        self.is_correct = is_correct
 
 
 class EqEvaluator(object):
@@ -67,7 +68,6 @@ class EqEvaluator(object):
         return shd
 
 
-
 class FrontReranker(object):
     def __init__(self, iter_info: list[EqInfo]):
         self.iter_info = iter_info
@@ -83,7 +83,7 @@ class FrontReranker(object):
 
             self.best_info = self.iter_info[min_idx]
             return self.best_info
-        else: return EqInfo(None, None, None, None, None, None)
+        else: return EqInfo(None, None, None, None, None, None, None)
 
 
 class EqReranker(object):
@@ -140,13 +140,13 @@ def evaluate_fronts(pareto_fronts, dir_name, runtime, iter_num):
                 eq_eval = EqEvaluator(dir_name, terms_with_coeffs)
                 mae = eq_eval.eval_mae()
                 shd = eq_eval.eval_shd()
-                eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, mae, shd, runtime, iter_num)
+                eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, mae, shd, runtime, iter_num, True)
                 # shd, time, iter_num)
                 iter_eq_info.append(eq_info)
                 save_equation(eq_info, dir_name, iter_num)
             elif dir_name == "burg_sindy" and soeq.obj_fun[0] < 0.026:
                 print("Some unknown equation with low obj_fun found")
-                eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, 1000000, 1000000, runtime, iter_num)
+                eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, 1000000, 1000000, runtime, iter_num, True)
                 iter_eq_info.append(eq_info)
                 save_equation(eq_info, dir_name, iter_num)
     return iter_eq_info

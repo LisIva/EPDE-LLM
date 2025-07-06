@@ -11,12 +11,12 @@ class StructEvaluator(object):
         self.dir_name = dir_name
         self.terms_with_coeffs = struct_conv.convert()
 
-
     def evaluate(self, loss, runtime, iter_num):
         eq_eval = EqEvaluator(self.dir_name, self.terms_with_coeffs)
         mae = eq_eval.eval_mae(True)
         shd = eq_eval.eval_shd()
-        return EqInfo(self.terms_with_coeffs, loss, mae, shd, runtime, iter_num)
+        return EqInfo(self.terms_with_coeffs, loss, mae, shd, runtime, iter_num, eq_eval.is_correct_schema)
+
 
 class TrackEvaluator(object):
     def __init__(self, dir_name, records_track, pruned_track, runtime, iter_num):
