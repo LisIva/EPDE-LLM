@@ -15,7 +15,7 @@ The proposed model attempts to include both temporal and spatial variations alon
 ```python
 def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
     right_side = params[0] * x * derivs_dict["du/dx"] + params[1] * (t**2) * (derivs_dict["du/dx"]**2)
-    string_form_of_the_equation = "d^2u/dt^2 = c[0]*x*du/dx + c[1]*t^2*(du/dx)^2"
+    string_form_of_the_equation = "d^2u/dt^2 = c[0] * x * du/dx + c[1] * t^2 * (du/dx)^2"
     len_of_params = len(params)
     return right_side, string_form_of_the_equation, len_of_params
 ```

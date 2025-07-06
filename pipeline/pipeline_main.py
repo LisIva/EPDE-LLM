@@ -27,7 +27,7 @@ if __name__ == '__main__':
         t2 = time.time()
 
         te = TrackEvaluator(dir_name, opt_manager.eq_buffer.full_records_track, pruned_track, t2-t1, iter_num)
-        best_eq_info = te.evaluate()
+        best_eq_info = te.evaluate() # вот эту ф-ю надо дописать!!!
         best_info_ls.append(best_eq_info)
 
     eq_r = EqReranker(best_info_ls, dir_name)
