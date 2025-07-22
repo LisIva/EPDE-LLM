@@ -42,21 +42,20 @@ def evaluate(data: dict) -> float:
 points_set =
 {points_set}
 exp_buffer = {{
-"d^2u/dt^2 = c[0] * du/dx + c[1] * x * du/dx": 1001,
-"d^2u/dt^2 = c[0] * du/dx": 1000,
-"d^2u/dt^2 = c[0] * du/dx * t**(c[1]) * x**(c[2])": 997,
-"d^2u/dt^2 = c[0] * du/dx + c[1] * t * du/dx + c[2] * (du/dx)^2": 987,
-"d^2u/dt^2 = c[0] * x * du/dx + c[1] * t^2 * (du/dx)^2": 983,
-"d^2u/dt^2 = c[0] * du/dx + c[1]*x + c[2]": 895,}}
+"du/dt = c[0] * du/dx": 537,
+"du/dt = c[0] * du/dx + c[1] * du^2/dx^2": 532,
+"du/dt = c[0] * du/dx + c[1] * du/dx * t": 442,
+"du/dt = c[0] * du/dx + c[1] * u * du/dx": 438,
+"du/dt = c[0] * u * du/dx + c[1] * du/dx + c[2] * d^2u/dx^2": 37.1,}}
 
 #/end of input data
 
-# An example of desired output:
+# An example of desired output in the form of previously discovered equation:
 ```python
 def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"]
-    string_form_of_the_equation = "du/dt = c[0] * du/dx"
-    len_of_params = 1
+    right_side = params[0] * derivs_dict["du/dx"] + params[1] * derivs_dict["du/dx"] * t
+    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * du/dx * t"
+    len_of_params = 2
     return right_side, string_form_of_the_equation, len_of_params
 
 ```
