@@ -18,7 +18,7 @@ if __name__ == '__main__':
                              resample_shape=(20, 20), n_candidates=4)
     opt_manager.explore_solutions()
 
-    pruned_track, _ = opt_manager.call_pruner()
+    pruned_track, not_pruned = opt_manager.call_pruner()
     full_records_track = opt_manager.eq_buffer.full_records_track
     data = opt_manager.evaluator.data['inputs'] # "inputs": [raw_data['t'], raw_data['x'], raw_data['u']]
     epde_searcher = EpdeSearcher(data, full_records_track, pruned_track, dir_name, use_init_population=True,

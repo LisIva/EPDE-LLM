@@ -3,8 +3,8 @@ from epde_struct_evaluator.epde_struct_evaluator import TrackEvaluator
 from epde_eq_parse.eq_evaluator import EqReranker
 import time
 
-max_llm_run = 1
-max_iter = 1
+max_llm_run = 2
+max_iter = 5
 dir_name = 'burg_sindy'
 start_iter = 0
 refine_point = 100
@@ -15,7 +15,7 @@ exit_code = False
 
 
 if __name__ == '__main__':
-    best_info_ls = []
+    pruned_eq_info_ls = []
 
     for iter_num in range(max_llm_run):
         t1 = time.time()
@@ -27,11 +27,11 @@ if __name__ == '__main__':
         t2 = time.time()
 
         te = TrackEvaluator(dir_name, opt_manager.eq_buffer.full_records_track, pruned_track, t2-t1, iter_num)
-        best_eq_info = te.evaluate() # вот эту ф-ю надо дописать!!!
-        best_info_ls.append(best_eq_info)
+        pruned_eq_infos = te.evaluate()
+        pruned_eq_info_ls.append(pruned_eq_infos)
 
-    eq_r = EqReranker(best_info_ls, dir_name)
-    eq_r.best_run_inf = best_info_ls
+    eq_r = EqReranker(pruned_eq_info_ls, dir_name)
+    eq_r.best_run_inf = pruned_eq_info_ls
     # eq_r.to_csv()
     print()
 

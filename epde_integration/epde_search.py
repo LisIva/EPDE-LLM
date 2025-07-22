@@ -5,9 +5,6 @@ from pipeline.epde_translator.sol_track_translator import SolTrackTranslator
 import time
 from epde_eq_parse.eq_evaluator import evaluate_fronts, FrontReranker
 from epde_eq_parse.eq_parser import clean_parsed_out
-import os
-import epde.loader as Loader
-
 
 
 def get_epde_search_obj(grids, dir_name, device='cpu'):
@@ -111,17 +108,7 @@ class EpdeSearcher(object):
                                                           self.llm_pool.max_deriv_pow['data_fun_pow']),
                                          deriv_fun_pow=max(1, self.llm_pool.max_deriv_pow['deriv_fun_pow']),
                                          derivs=None)
-        # self.epde_search_obj.occupied_tokens_labels = []
 
-        path_dir = os.path.join(os.path.dirname(os.path.abspath('')), 'saved_population')
-        loader = Loader.EPDELoader()
-        loader.save(obj=self.epde_search_obj.pool,
-                    filename=os.path.join(path_dir, 'pool.pickle'))  # Pickle-saving the pool
         for i, eq_u in enumerate(self.__eq_epde_str):
-            front = translate_equation(eq_u, pool=self.epde_search_obj.pool, all_vars=['u', ])
-            self.population.append(front)
-            loader.save(obj=front, filename=os.path.join(path_dir, f'eqs{i}.pickle'))  # Pickle-saving an equation
-
-        print()
-
-
+            soeqs = translate_equation(eq_u, pool=self.epde_search_obj.pool, all_vars=['u', ])
+            self.population.append(soeqs)

@@ -33,11 +33,11 @@ class TrackEvaluator(object):
             eq_info = struct_conv.evaluate(self.records_track[eq_key].loss, self.runtime, self.iter_num)
             run_eq_info.append(eq_info)
 
-        best_eq_info = []
-        if len(run_eq_info) != 0:
-            front_r = FrontReranker(run_eq_info)
-            return front_r.select_best()
-        else:
-            print('An empty list of equations was received from the LLM')
-            return None
+        return run_eq_info if len(run_eq_info) != 0 else None
+        # if len(run_eq_info) != 0:
+        #     front_r = FrontReranker(run_eq_info)
+        #     return front_r.select_best()
+        # else:
+        #     print('An empty list of equations was received from the LLM')
+        #     return None
 
