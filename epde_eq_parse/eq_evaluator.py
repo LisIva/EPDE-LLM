@@ -109,9 +109,12 @@ class EqReranker(object):
         self.best_run_inf.append(self.run_eq_info[min_idx])
         return self.best_run_inf
 
-    def to_csv(self):
+    def to_csv(self, llm_generated=False):
         header = ['mae', 'shd', 'runtime']
-        file_path = os.path.join(PARENT_PATH, "epde_eq_parse", "metrics", f'{self.dir_name}_metrics.csv',)
+        if llm_generated:
+            file_path = os.path.join(PARENT_PATH, "pipeline", "metrics", f'{self.dir_name}_metrics.csv', )
+        else:
+            file_path = os.path.join(PARENT_PATH, "epde_eq_parse", "metrics", f'{self.dir_name}_metrics.csv',)
 
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
