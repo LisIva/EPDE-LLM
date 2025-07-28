@@ -52,17 +52,23 @@ class StructConverter(object):
     def replace_with_params(self):
         pattern = r"c\[(\d+)\]"
 
-        def replace_c_with_params(match):
-            # Extract the index from the match
-            idx_str = match.group(1)
-            idx = int(idx_str)
-            # Check if the index is within the bounds of the params vector
-            if 0 <= idx < len(self.params):
-                return str(self.params[idx])
-            else:
-                raise IndexError("The len of 'c' and 'params' do not align")
+        if bool(re.search(pattern, self.eq_str)):
+            def replace_c_with_params(match):
+                # Extract the index from the match
+                idx_str = match.group(1)
+                idx = int(idx_str)
+                # Check if the index is within the bounds of the params vector
+                if 0 <= idx < len(self.params):
+                    return str(self.params[idx])
+                else:
+                    raise IndexError("The len of 'c' and 'params' do not align")
 
-        self.eq_str = re.sub(pattern, replace_c_with_params, self.eq_str)
+            self.eq_str = re.sub(pattern, replace_c_with_params, self.eq_str)
+
+        elif bool(re.search(r"\bc\b", self.eq_str)):
+            # Replace standalone c
+            self.eq_str = re.sub(r'\bc\b', str(self.params[0]), self.eq_str)
+
 
 if __name__ == '__main__':
     s1 = 'c[0] * du/dx + c[1] * t * du/dx + c[2] * t * x'
