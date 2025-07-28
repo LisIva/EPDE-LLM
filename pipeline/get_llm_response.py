@@ -22,19 +22,23 @@ def info(prompt, response, model_response):
     print(f"Len(out_symbols): {len(response)}")
 
 
-def get_debug_response(num=0):
-    file_path = os.path.join(PARENT_PATH, "pipeline", "debug_llm_outputs",  f"out_{num}.txt")
+def get_debug_response(llm_iter=0, num=0):
+    file_path = os.path.join(PARENT_PATH, "pipeline", "debug_llm_outputs", f"llm_iter_{llm_iter}",  f"out_{num}.txt")
     with open(file_path, encoding='utf-8') as debug:
         data = debug.read()
     return data
 
 
-def get_response(file_name="continue-iter.txt", num=0, dir_name='burg', print_info=False):
+def get_response(file_name="continue-iter.txt", llm_iter=0, num=0, dir_name='burg', print_info=False):
     client = OpenAI(
         api_key=creds.api_key,
         base_url="https://api.vsegpt.ru/v1")
 
-    prompt_path = os.path.join(PARENT_PATH, "pipeline", "prompts", file_name)
+    if file_name != "zero-iter.txt":
+        prompt_path = os.path.join(PARENT_PATH, "pipeline", "prompts", f"llm_iter_{llm_iter}", file_name)
+    else:
+        prompt_path = os.path.join(PARENT_PATH, "pipeline", "prompts", file_name)
+
     prompt = read_with_langchain(path=prompt_path, dir_name=dir_name) # 2446 base len
     messages = [{"role": "user", "content": prompt}]
     response_big = client.chat.completions.create(
@@ -50,7 +54,7 @@ def get_response(file_name="continue-iter.txt", num=0, dir_name='burg', print_in
         print("Response:", response)
         info(prompt, response, response_big)
 
-    write_path = os.path.join(PARENT_PATH, "pipeline", "debug_llm_outputs",  f"out_{num}.txt")
+    write_path = os.path.join(PARENT_PATH, "pipeline", "debug_llm_outputs", f"llm_iter_{llm_iter}",  f"out_{num}.txt")
     with open(write_path, 'w', encoding="utf-8") as model_out:
         model_out.write(response)
     return response

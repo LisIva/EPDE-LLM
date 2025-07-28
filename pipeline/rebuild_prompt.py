@@ -73,8 +73,8 @@ def create_new_file(start_pos, end_pos, new_dict_str, response, continue_content
 
     new_buff_file = continue_content[:start_pos] + new_dict_str + continue_content[end_pos:]
 
-    if num == 0:
-        path = os.path.join(PARENT_PATH, "pipeline", "prompts", "continue-iter.txt")
+    # if num == 0:
+    #     path = os.path.join(PARENT_PATH, "pipeline", "prompts", "continue-iter.txt")
     if write_file:
         with open(path, 'w') as prompt:
             prompt.write(new_buff_file)
@@ -94,12 +94,20 @@ def retrieve_copy_exp_buff(next_path, copy_from, num):
         return start_pos_next, end_pos_next, dict_str_next, file_content_next
 
 
-def rebuild_prompt(insert_eq_str, value, response, file_name="continue-iter.txt", num=0):
+def rebuild_prompt(insert_eq_str, value, response, file_name="continue-iter.txt", llm_iter=0, num=0):
+    '''
+        В большинстве случаев path и copy_from совпадают и равны continue-iter.txt,
+        в одном случае у нас path равен zero_iter
+    '''
     if len(insert_eq_str) > 250:
         raise Exception('The composed equation has an unaccepted structure: len(insert_eq_str) > 250')
 
-    path = os.path.join(PARENT_PATH, "pipeline", "prompts",  file_name)
-    copy_from = os.path.join(PARENT_PATH, "pipeline", "prompts",  "continue-iter.txt")
+    if file_name == 'zero-iter.txt':
+        path = os.path.join(PARENT_PATH, "pipeline", "prompts",  file_name)
+    else:
+        path = os.path.join(PARENT_PATH, "pipeline", "prompts", f"llm_iter_{llm_iter}", file_name)
+
+    copy_from = os.path.join(PARENT_PATH, "pipeline", "prompts", f"llm_iter_{llm_iter}",  "continue-iter.txt")
     start_pos, end_pos, dict_str, file_content = retrieve_copy_exp_buff(next_path=path,
                                                                         copy_from=copy_from,
                                                                         num=num)
@@ -108,6 +116,8 @@ def rebuild_prompt(insert_eq_str, value, response, file_name="continue-iter.txt"
         return None, None
 
     new_dict_str = insert_equation(insert_eq_str, value, dict_str)
+
+    path = os.path.join(PARENT_PATH, "pipeline", "prompts", f"llm_iter_{llm_iter}", "continue-iter.txt")
     new_file = create_new_file(start_pos, end_pos, new_dict_str, response, file_content, path, write_file=True, num=num)
     return new_file, file_content
 
