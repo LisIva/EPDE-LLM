@@ -1,0 +1,20 @@
+The provided data shows the evolution of a function u(x,t) over time and space, as well as the derivatives of u up to the second order with respect to time and space. In order to construct a function of the form du/dt = F(t, x, u, du/dx, d^2u/dt^2, d^2u/dx^2) from this data, we can observe common patterns that relate these variables.
+
+The data appears to have significant contributions from the derivatives of u, especially du/dx. Therefore, a good starting point would be a functional form that is linear in the derivatives: du/dt = c * du/dx + d * u + e * d^2u/dt^2 + f * d^2u/dx^2 + g * x + h * t + i.
+
+We can then optimize the coefficients (c, d, e, f, g, h, i) to minimize the mean squared difference between the predicted du/dt and the true values.
+
+One of the simple structures that could roughly describe the relationships in data in the way described by the equation_v1 function in the end, could be:
+
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    # c * du/dx + d * u + i
+    right_side = params[0] * derivs_dict["du/dx"] + params[1] * u + params[2]
+    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * u + c[2]"
+    len_of_params = 3 
+    return right_side, string_form_of_the_equation, len_of_params
+```
+
+The equation assume that du/dt is a linear combination of u, du/dx, and a constant (i). The coefficients (c, d, and i) are optimized to minimize the mean squared difference between the predicted and the true du/dt values. The equation string_form_of_the_equation behaves in the same way as the associated right_side of equation_v1. The number of parameters, len_of_params, is three (which are optimized during the minimization process).
+
+Please, find that in general, the choice of functional form of F for the equation du/dt = F(t, x, u, du/dx, d^2u/dt^2, d^2u/dx^2) for the aforementioned data is not trivial and depends on the underlying physics/mathematics of the problem. It might be necessary to experiment with different forms of F. Also, remember to avoid overfitting your equation to the data by including too many parameters.

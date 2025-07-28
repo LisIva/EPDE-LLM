@@ -1,0 +1,21 @@
+To construct a new equation that is not present in the `exp_buffer`, we can start by looking at the structure of the existing equations and try to introduce new elements that could potentially capture more complex relationships between the variables. Our new function could take into account the products between the derivatives, or we could try higher order terms. Let's propose a new structure where the second derivative with respect to x is multiplied by the first derivative with respect to t and then scaled by a constant.
+
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    right_side = params[0] * derivs_dict["d^2u/dx^2"] * derivs_dict["d^2u/dt^2"]
+    string_form_of_the_equation = "du/dt = c[0] * d^2u/dx^2 * d^2u/dt^2"
+    len_of_params = 1
+    return right_side, string_form_of_the_equation, len_of_params
+```
+However, to further explore the function space, a more complex equation could involve an interaction between first and second derivatives and the variable 'u'. By constructing 'du/dt = c[0] * d^2u/dx^2 * d^2u/dt^2 + c[1] * u * (du/dx)**2', we aim at capturing how the changes in 'u' modulate the influence of higher-order derivatives on the rate of change of 'u'.
+
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    term1 = params[0] * derivs_dict["d^2u/dx^2"] * derivs_dict["d^2u/dt^2"]
+    term2 = params[1] * u * derivs_dict["du/dx"]**2
+    right_side = term1 + term2
+    string_form_of_the_function = "du/dt = c[0] * d^2u/dx^2 * d^2u/dt^2 + c[1] * u * (du/dx)^2"
+    P = 2 # number of parameters
+    return right_side, string_form_of_the_function, P
+```
+These functions can then be passed to the given `evaluate` function in order to optimize their parameters and assess the quality of the fit according to the loss function loss_function and evaluation score eval_metric.

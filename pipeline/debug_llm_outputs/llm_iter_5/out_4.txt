@@ -1,0 +1,18 @@
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    # Start from a base equation that includes the du/dx derivative to ensure at least one derivative is present
+    right_side = params[0] * derivs_dict["du/dx"]
+
+    # Include the derivative d^2u/dx^2 with a separate parameter to explore its interaction with du/dx
+    right_side += params[1] * derivs_dict["d^2u/dx^2"]
+
+    # Add some possiblility of multiplication between du/dx and d^2u/dx^2
+    right_side += params[2] * derivs_dict["du/dx"] * derivs_dict["d^2u/dx^2"]
+
+    # Return the right side of the equation, a string representation of it and the number of parameters used
+    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * d^2u/dx^2 + c[2] * du/dx * d^2u/dx^2"
+    len_of_params = 3
+
+    return right_side, string_form_of_the_equation, len_of_params
+```
+This equation appears to not have appeared previously in the `exp_buffer` dict. Also, it explores the interaction between the first order derivative with respect to `x`, `du/dx` and the second order derivative with respect to `x`, `d^2u/dx^2` by multiplying them together and seeing if there is any inexplicit relationship between these two variables that can help describe the rate of change with time, `du/dt`. It also takes influence of these two derivatives independently by using two separate parameters for these derivatives.

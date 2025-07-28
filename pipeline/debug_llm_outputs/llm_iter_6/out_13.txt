@@ -1,0 +1,8 @@
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    right_side = params[0] * derivs_dict["du/dx"] + params[1] * (derivs_dict["du/dx"])**2 + params[2] * derivs_dict["d^2u/dx^2"]
+    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * (du/dx)**2 + c[2] * (d^2u/dx^2)"
+    len_of_params = 3
+    return right_side, string_form_of_the_equation, len_of_params
+```
+In this case, the function `equation_v1` contains a possible equation that could describe the dataset in question, this equation is not yet found in the `exp_buffer` and is made up of the terms `du/dx`, `(du/dx)**2`, and `d^2u/dx^2`. It should pass the `exp_buffer` check since its structure is different from the ones explored before, and its score should be calculated using the function `evaluate`.

@@ -1,0 +1,26 @@
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    right_side = params[0] * derivs_dict["du/dx"] + params[1] * derivs_dict["d^2u/dt^2"] + params[2] * derivs_dict["d^2u/dx^2"]
+    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * d^2u/dt^2 + c[2] * d^2u/dx^2"
+    len_of_params = 3
+    return right_side, string_form_of_the_equation, len_of_params
+
+```
+
+For a simpler alternative, consider:
+
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    right_side = params[0] * derivs_dict["du/dx"] + params[1] * u
+    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * u"
+    len_of_params = 2
+    return right_side, string_form_of_the_equation, len_of_params
+
+``` 
+
+Both functions return the right side of the differential equation as a numpy array, the string form of the equation, and the length of the params array (which should match the number of constants used in the equation).
+In this structure, one function is an example of a more complicated model, while the second function represents a simpler model.
+The goal is to explore the space of function forms that can be fit to the data, starting from the simpler alternatives and gradually increasing complexity if needed.
+The constants c[] represent the parameters of the equation, which are optimized using the minimize function from the scipy.optimize module.
+Remember to check exp_buffer for exact equality of your string_form_of_the_equation before introducing a new equation to the environment to save computational resources.
+Feel free to adjust or modify the function to fit your specific needs.

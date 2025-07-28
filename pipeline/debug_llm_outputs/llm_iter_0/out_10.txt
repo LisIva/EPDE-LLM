@@ -1,0 +1,19 @@
+Given that numerous attempts have been made to find the equation as defined by the `exp_buffer`, it is clear that the patterns underpinning the given dataset are non-trivial. Considering how the function `equation_v1` is supposed to be constructed, we propose a new equation that is not present in the experimental buffer and that includes a derivative as required. 
+
+For an example, a function that multiplies the square of the derivative with respect to `x` of `u` at the current point (`d^2u/dx^2`), by the derivative of `u` with respect to `t`  (`du/dt`), while considering a constant shift factor may offer a new way to explore the pattern space. 
+
+Let's explore an equation of the form:
+
+`du/dt = c[0] * du/dx * d^2u/dx^2 + c[1]`.
+
+In this case we're also adding a constant term `c[1]` to make it more complex. Given the nature of the `exp_buffer`, it revisits similar structures but with added complexity if required.
+
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    right_side = params[0] * derivs_dict["du/dx"] * derivs_dict["d^2u/dx^2"] + params[1]
+    string_form_of_the_equation = "du/dt = c[0] * du/dx * d^2u/dx^2 + c[1]"
+    len_of_params = 2
+    return right_side, string_form_of_the_equation, len_of_params
+```
+
+This equation satisfies the constraints laid out in the task description - it is dependent on the `du/dx` and `d^2u/dx^2` derivatives and is also not represented in the experimental buffer. This equation is constructed with the goal to explore a new space in the dynamics of the system not yet looked at, also considering complex relationships between the derivatives of `u`.
