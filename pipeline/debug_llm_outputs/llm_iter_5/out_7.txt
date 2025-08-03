@@ -1,9 +1,0 @@
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * derivs_dict["d^2u/dx^2"] + params[2] * derivs_dict["du/dx"] * derivs_dict["d^2u/dx^2"]
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * d^2u/dx^2 + c[2] * du/dx * d^2u/dx^2"
-    len_of_params = 3
-    return right_side, string_form_of_the_equation, len_of_params
-```
-
-In this example, I chose to include 'du/dx', 'd^2u/dx^2', and their product as all of these terms haven't been used together in the equations found in 'exp_buffer'. By including their product, we explore possible interactions between these derivatives that may have been left unexplored in the previous attempts. Note that this equation includes at least one derivative as per the requirements.

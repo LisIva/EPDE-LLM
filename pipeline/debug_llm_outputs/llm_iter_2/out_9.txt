@@ -1,8 +1,0 @@
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * u * derivs_dict["d^2u/dx^2"]
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * u * d^2u/dx^2"
-    len_of_params = 2
-    return right_side, string_form_of_the_equation, len_of_params
-```
-Note: the chosen equation 'du/dt = c[0] * du/dx + c[1] * u * d^2u/dx^2' is not present in the exp_buffer and includes derivatives 'du/dx' and 'd^2u/dx^2' as well as the function value 'u'. This equation appears to be more general than those evaluated before, considering the requirement to explore the space of equations to find other potential solutions. The coefficients 'c[0]' and 'c[1]' are expected to be optimized through the loss function to minimize the error.

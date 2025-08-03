@@ -1,11 +1,11 @@
-Based on the input data and the exp_buffer, an equation that hasn't been explored yet could be:
+Based on the given data and exp_buffer, an equation that is not yet explored and might uncover an interaction between variables could be:
 
 ```python
 def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * (derivs_dict["du/dx"] ** 2)
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * (du/dx)^2"
+    right_side = params[0] * derivs_dict["du/dt"] * derivs_dict["du/dx"] + params[1] * derivs_dict["d^2u/dx^2"]
+    string_form_of_the_equation = "du/dt = c[0] * du/dt * du/dx + c[1] * d^2u/dx^2"
     len_of_params = 2
     return right_side, string_form_of_the_equation, len_of_params
 ```
 
-This equation introduces a new term - the square of the derivative du/dx - which hasn't been used in previous attempts. The term (du/dx)^2 is added to the du/dx term, with each term being modulated by its own constant coefficient c[0] and c[1], respectively. The inclusion of the square term (du/dx)^2 introduces a nonlinear relationship between du/dt and du/dx, which could potentially better explain the variations in the data.
+The reason for choosing this equation is that it involves the first and second derivative with respect to x, and also creates a product between the dependent variable time derivative and the spatial derivative, an interaction that might not have been explored before and can uncover a hidden relationship based on the non-linear relationship between u and t. Additionally, the second order spatial derivative is also included as a linear term, contributing to the complexity and expressiveness of the equation model.

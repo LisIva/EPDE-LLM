@@ -42,20 +42,19 @@ def evaluate(data: dict) -> float:
 points_set =
 {points_set}
 exp_buffer = {{
-"du/dt = c[0] * du/dx * d^2u/dx^2 + c[1]": 1000,
-"du/dt = c[0] * t * d^2u/dx^2 + c[1] * d^2u/dx^2": 949,
-"du/dt = du/dx * d^2u/dx^2 + c[0] * du/dx + c[1] * d^2u/dx^2": 936,
-"du/dt = c[0] * (du/dx)**2 + c[1] * u * d^2u/dx^2": 824,
-"du/dt = c[0] * d^2u/dx^2 + c[1] * (du/dx)^2 + c[2] * d^2u/dt^2": 700,
-"du/dt = c[0] * u + c[1] * (du/dx)^2 + c[2] * d^2u/dx^2": 670,
-"du/dt = c[0] * du/dx + c[1] * u + c[2]": 638,
+"du/dt = c[0] * du/dx * d^2u/dx^2": 1000,
+"du/dt = c[0] * u * (du/dx)**2 + c[1] * du/dx * d^2u/dt^2": 870,
+"du/dt = c[0] * du/dt * du/dx + c[1] * d^2u/dx^2": 846,
+"du/dt = c[0] * (du/dx)^2 + c[1] * du/dx * d^2u/dx^2": 836,
+"du/dt = c[0] * (du/dx)^2 + c[1] * du/dx * (d^2u/dx^2)^2": 811,
+"du/dt = c[0] * d^2u/dx^2 + c[1] * (du/dx)**2": 782,
+"du/dt = c[0] * du/dx * d^2u/dx^2 + c[1] * du/dx": 538,
 "du/dt = c[0] * du/dx + c[1] * du/dx * d^2u/dx^2": 538,
-"du/dt = c[0] * du/dx + c[1] * d^2u/dt^2": 536,
-"du/dt = c[0] * du/dx + c[1] * u": 533,
-"du/dt = c[0] * du/dx + c[1] * (du/dx)^2": 532,
+"du/dt = c[0] * du/dx + c[1] * d^2u/dx^2 * du/dx": 538,
+"du/dt = c[0] * du/dx": 537,
+"du/dt = c[0] * du/dx + c[1] * (du/dx)**2 + c[2] * exp(du/dx) + c[3] * d^2u/dx^2": 493,
 "du/dt = c[0] * du/dx + c[1] * d^2u/dx^2 + c[2] * u": 484,
-"du/dt = c[0] * du/dx * u + c[1] * du/dx * d^2u/dx^2": 286,
-"du/dt = c[0] * u * du/dx + c[1] * d^2u/dx^2": 38.9,}}
+"du/dt = c[0] * du/dx + c[1] * d^2u/dx^2 + c[2] * du/dx * d^2u/dx^2": 414,}}
 
 #/end of input data
 

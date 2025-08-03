@@ -1,14 +1,8 @@
-Given the provided data and the exploration buffer, a new equation that is not yet in the buffer and might help to explore more interactions between variables is:
-\[ \frac{du}{dt} = c[0] * u * \frac{du}{dx} + c[1] * \left(\frac{du}{dx}\right)^2 \]
-
-This equation is dependent on both \(u\) and its first derivative \(\frac{du}{dx}\), which respects the requirement of having an equation that relies on at least one derivative. It also does not directly include \(t\) or \(x\) in its structure, as hinted in the question guidelines, since u and its derivatives already depend on \(t\) and \(x\).
-
-Here is the python function that implements the equation:
 ```python
 def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * u * derivs_dict["du/dx"] + params[1] * (derivs_dict["du/dx"]**2)
-    string_form_of_the_equation = "du/dt = c[0] * u * du/dx + c[1] * (du/dx)**2"
+    right_side = params[0] * derivs_dict["d^2u/dx^2"] + params[1] * derivs_dict["du/dx"] * u
+    string_form_of_the_equation = "du/dt = c[0] * d^2u/dx^2 + c[1] * u * du/dx"
     len_of_params = 2
     return right_side, string_form_of_the_equation, len_of_params
-
 ```
+Note: This equation is just an example and may not be the correct solution. The `params` array size should match `len_of_params`. The equation is not present in `exp_buffer` and is exploring a different section of the solution space.

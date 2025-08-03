@@ -1,9 +1,0 @@
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * (derivs_dict["du/dx"]**2) + params[1] * derivs_dict["d^2u/dx^2"] + params[2] * derivs_dict["du/dt"]
-    string_form_of_the_equation = "du/dt = c[0] * (du/dx)^2 + c[1] * d^2u/dx^2 + c[2] * du/dt"
-    len_of_params = 3
-    return right_side, string_form_of_the_equation, len_of_params
-```
-
-This solution is an attempt to explore the space of possible equations by using a combination of the first and second derivatives of u with respect to x and the derivative of u with respect to t. It is mindful of the requirement that the equation must be dependent on at least one derivative, and attempts to find interactions between the different derivatives. The examples given in the exp_buffer suggest equations that are dependent on du/dx and d^2u/dx^2, so this equation explores a variation on that theme by also including du/dt, while adhering to the guidelines of not copying existing attempts and only giving simplified equation forms.

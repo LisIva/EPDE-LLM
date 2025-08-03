@@ -1,8 +1,0 @@
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * derivs_dict["du/dt"] * derivs_dict["du/dx"] + params[2] * (derivs_dict["du/dx"])**2
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * du/dt * du/dx + c[2] * (du/dx)**2"
-    len_of_params = 3
-    return right_side, string_form_of_the_equation, len_of_params
-```
-Note: The suggested equation is not in the exp_buffer, it includes du/dx, du/dt and (du/dx)**2 hence meeting the requirements. As this equation was not previously explored, it could allow us to gain a better understanding of the possible relationship between the input variables. Also, it is in the string form consistent with the provided example.

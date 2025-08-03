@@ -1,8 +1,0 @@
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * derivs_dict["d^2u/dx^2"]**2
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * (d^2u/dx^2)**2"
-    len_of_params = 2
-    return right_side, string_form_of_the_equation, len_of_params
-```
-This suggested function takes into account the previous attempts in `exp_buffer` and proposes a new equation which combines a first order derivative with the square of a second order derivative. The goal is to explore potentially non-linear relationships in the data.
