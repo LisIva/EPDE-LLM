@@ -42,10 +42,7 @@ class StructConverter(object):
         terms_dict = {}
         for term in terms:
             idx = term.find('*')
-            try:
-                coef = float(term[:idx])
-            except ValueError('Could not convert {} to float'.format(term[:idx])):
-                coef = 1.0
+            coef = float(term[:idx])
             term = term[idx+1:].strip()
             terms_dict[term] = coef
 

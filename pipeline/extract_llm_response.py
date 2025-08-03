@@ -109,6 +109,12 @@ def replace_wrong_lenparams(eq1_fun_text):
     else: return eq1_fun_text
 
 
+def replace_header(eq1_fun_text):
+    start_idx = eq1_fun_text.find("\n")
+    true_header = "def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict, params: np.ndarray):"
+    return true_header + eq1_fun_text[start_idx:]
+
+
 def replace_number_formatting(eq1_fun_text):
     return re.sub(r':\.\d+f\b', '', eq1_fun_text)
 
@@ -126,6 +132,7 @@ def compose_equation_v1_fun(response=None, path='out_0.txt'):
     eq1_fun_text = replace_wrong_lenparams(eq1_fun_text)
     eq1_fun_text = replace_wrong_signs(eq1_fun_text, code_type='right_side')
     eq1_fun_text = replace_wrong_u_call(eq1_fun_text)
+    eq1_fun_text = replace_header(eq1_fun_text)
     eq1_fun_text = replace_number_formatting(eq1_fun_text)
     return eq1_fun_text
 

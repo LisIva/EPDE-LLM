@@ -5,6 +5,7 @@ from pipeline.optimization_workflow.complexity_evaluation import eval_complexity
 from promptconstructor.array_to_txt import Data
 from promptconstructor.info_prompts import prompt_complete_inf
 from pipeline.buffer_handler.code_parser import RSExtractor
+import traceback
 
 
 def define_eq(response):
@@ -53,6 +54,7 @@ class Evaluator(object):
             rs_code = RSExtractor(eq_code, P).rs_code
         except Exception:
             print("\nAn error occurred while trying to compile an equation or extracting right_side")
+            # print(traceback.format_exc())
 
         complex_score, relat_score, loss, params = self.get_eval_scores(eq_str, P)
         eq_buffer.push_record(eq_str, complex_score, relat_score, loss, eq_code, params, rs_code)
