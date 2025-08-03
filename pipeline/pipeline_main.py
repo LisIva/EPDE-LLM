@@ -2,14 +2,15 @@ from pipeline.optimization_workflow.optimization_manager import OptManager
 from epde_struct_evaluator.epde_struct_evaluator import TrackEvaluator
 from epde_eq_parse.eq_evaluator import EqReranker
 import time
+import re
 
-max_llm_run = 1
-max_iter = 15
+max_llm_run = 48
+max_iter = 30
 dir_name = 'burg_sindy'
 start_iter = 0
 refine_point = 100
 
-debug = True # True False
+debug = False # True False
 print_exc = True
 exit_code = False
 

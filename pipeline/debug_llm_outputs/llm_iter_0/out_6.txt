@@ -1,21 +1,37 @@
-Considering the data provided and the exploration buffer, there doesn't seem to be any simple derivative-based pattern that was explored yet. We could consider exploring different functional relationships that involve both 'du/dx' and 'd^2u/dx^2'. Since the data might have inexplicit interactions, it makes sense to consider higher order derivatives. 
+To ensure our proposed model is novel and yet unexplored by the `exp_buffer`, we will include a term that involves `du/dt`. This, however, isn't accessible directly, but having an "inexplicit" interaction as requested implies considering the terms already present in a new way. A connection between `du/dt` and the other terms can be presumably established by considering, for example, their derivatives or products.
 
-The next equation could be:
+We can consider an equation that involves the product of `d^2u/dx^2` and `du/dx`, along with a term involving `u` and `du/dx`. This structure hasn't yet been explored based on the contents of `exp_buffer`.
 
 ```python
 def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] ** 2 + params[1] * derivs_dict["du/dx"] * derivs_dict["d^2u/dx^2"]
-    string_form_of_the_equation = "du/dt = c[0] * (du/dx)^2 + c[1] * du/dx * d^2u/dx^2"
+    right_side = params[0] * derivs_dict["du/dx"] + params[1] * u * derivs_dict["d^2u/dx^2"] * derivs_dict["du/dx"] 
+    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * d^2u/dx^2 * du/dx * u"
     len_of_params = 2
     return right_side, string_form_of_the_equation, len_of_params
 ```
 
-Again, remember that: 
+This construction has an "inexplicit" interaction as requested: although `c[1] * d^2u/dx^2 * du/dx * u` may not be evident upon first glance, it does explicitly include two derivatives, and can potentially capture complex dynamics between `u` and its second-order spatial derivative `d^2u/dx^2` when multiplied by the first-order spatial derivative `du/dx`.
 
-* your goal is to find possible inexplicit interactions between derivatives;
-* derivative-based patterns in 'du/dx' or 'd^2u/dx^2' might indicate the existence of such interactions;
-* you're free to explore functions with higher complexity if necessary, but always start with simpler ones to build a base.
-* whenever an equation is successfully recognized, it should cover at least one derivative ('du/dx' or 'd^2u/dx^2') to fulfill the requirement of the function's form; and
-* your goal is to explore the equations' space (in relation to the score), and to examine any inexplicit interactions between the input variables, while staying true to the condition that 't' and 'x' can be involved in the function through 'u' and its derivatives.
+Please note, your score is calculated by calling the `evaluate` function with `data` dictionary that has `inputs` and `derivs_dict` as its keys that map to tuples and dictionaries, respectively, that contain `numpy.ndarray`s of the t, x and u values as stored in `points_set` and the points set derivatives, respectively. Function `evaluate` returns the score with which your solution is compared with other proposed functions. If you do not get a score, your function is incorrect, potentially because it does not depend on *any* of the derivatives. 
 
-Note: You might need to tune the values of the parameters 'c[0]' and 'c[1]' using an optimizer.
+You should use `data` provided in `evaluate` function to optimize parameters, and then return the optimized parameters. To do so, modify `evaluate` function according to your needs. That is how `exp_buffer` annotates solutions with their scores.
+
+Feel free to modify the loss_function, as well as the optimization algorithm, as long as you adhere to the requirements the function `evaluate` provides. Your goal is to consistently outscore the competition - an evaluation that is annoted in the `exp_buffer` dictionary. The score, however, is not returned, as it is only used for comparison among the functions. Your function is evaluated once and once only.
+
+Only the score improves on the best score, it will be kept in the `exp_buffer`. Otherwise it will be discarded immediately even if theoretically there could be better results with better optimisation if rerun another time.
+
+In this context the `params` are the `c[i]` variables from your equations.
+
+Please consider the derivative conventions as recommended in the requirements. When you look at the exp_buffer you'll notice it is inclusive of different layouts for the equation, that does not need to be duplicated manually - it is done for you. You must conform to the full layout requirements of matching your string equation to the exact layout expected. For example:
+
+* `du/dt = c[0] * du/dx * u * x`
+* `du/dt = c[0] + c[1] * du/dx * u`
+
+If you want to explore more complex the equations space, then consider the following:
+  
+* `du/dt = c[0] * u**(c[1]) + c[2] * du/dx * u**2`
+* `du/dt = c[0] * u + c[1] * du/dx + c[2] * u * du/dx`
+
+The last thing: only return the full layout equation as `string_form_of_the_equation` and refer to it only during the evaluations - all the `derivs_dict` will have the exact keys you put into the equations.
+
+Have fun!

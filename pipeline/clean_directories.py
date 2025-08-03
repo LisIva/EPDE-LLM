@@ -11,9 +11,6 @@ PARENT_PATH = Path(os.path.dirname(__file__)).parent
 
 def clean_output_dir(llm_iter=0, dir_path="debug_llm_outputs"):
     dir_path = os.path.join(PARENT_PATH, "pipeline", dir_path, f"llm_iter_{llm_iter}")
-    if len(os.listdir(dir_path)) == 0:
-        print(f"The directory {dir_path} is already empty")
-
     for file_path in os.listdir(dir_path):
         try:
             full_path = os.path.join(dir_path, file_path)

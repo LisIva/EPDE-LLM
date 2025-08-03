@@ -1,8 +1,0 @@
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["d^2u/dx^2"] + params[1] * derivs_dict["du/dx"] * u
-    string_form_of_the_equation = "du/dt = c[0] * d^2u/dx^2 + c[1] * u * du/dx"
-    len_of_params = 2
-    return right_side, string_form_of_the_equation, len_of_params
-```
-Note: This equation is just an example and may not be the correct solution. The `params` array size should match `len_of_params`. The equation is not present in `exp_buffer` and is exploring a different section of the solution space.

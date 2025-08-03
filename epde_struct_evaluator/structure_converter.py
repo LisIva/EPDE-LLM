@@ -10,11 +10,15 @@ class StructConverter(object):
         self.terms_dict = None
 
     def convert(self):
-        self.replace_with_params()
-        self.replace_x_and_t()
+        self.eq_str = self.replace_with_params()
+        self.eq_str = self.replace_x_and_t()
+        # self.eq_str = self.replace_number_formatting()
         self.terms_dict = self.get_dict_terms()
         self.resolve_ambiguity()
         return self.terms_dict
+
+    # def replace_number_formatting(self):
+    #     return re.sub(r':\.\d+f\b', ' ', self.eq_str)
 
     def resolve_ambiguity(self):
         for key in self.terms_dict.keys():
@@ -25,8 +29,8 @@ class StructConverter(object):
                 break
 
     def replace_x_and_t(self):
-        self.eq_str = self.eq_str.replace('x', 'x1')
-        self.eq_str = self.eq_str.replace('t', 'x0')
+        eq_str = self.eq_str.replace('x', 'x1')
+        return eq_str.replace('t', 'x0')
 
     def get_dict_terms(self):
         left_right = self.eq_str.split(' = ')
@@ -63,11 +67,11 @@ class StructConverter(object):
                 else:
                     raise IndexError("The len of 'c' and 'params' do not align")
 
-            self.eq_str = re.sub(pattern, replace_c_with_params, self.eq_str)
+            return re.sub(pattern, replace_c_with_params, self.eq_str)
 
         elif bool(re.search(r"\bc\b", self.eq_str)):
             # Replace standalone c
-            self.eq_str = re.sub(r'\bc\b', str(self.params[0]), self.eq_str)
+            return re.sub(r'\bc\b', str(self.params[0]), self.eq_str)
 
 
 if __name__ == '__main__':
