@@ -48,8 +48,11 @@ class Evaluator(object):
 
     def llm_response_eval(self, response, eq_buffer):
         eq_code = define_eq(response)
-        _, eq_str, P = equation_v1(*self.data['inputs'], self.data["derivs_dict"], np.zeros(100))
-        rs_code = RSExtractor(eq_code, P).rs_code
+        try:
+            _, eq_str, P = equation_v1(*self.data['inputs'], self.data["derivs_dict"], np.zeros(100))
+            rs_code = RSExtractor(eq_code, P).rs_code
+        except Exception:
+            print("\nAn error occurred while trying to compile an equation or extracting right_side")
 
         complex_score, relat_score, loss, params = self.get_eval_scores(eq_str, P)
         eq_buffer.push_record(eq_str, complex_score, relat_score, loss, eq_code, params, rs_code)
