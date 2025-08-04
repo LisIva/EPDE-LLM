@@ -9,10 +9,11 @@ import os
 
 PARENT_PATH = Path(os.path.dirname(__file__)).parent
 class EqInfo(object):
-    def __init__(self, terms_with_coeffs, obj_val, mae, shd, runtime, iter_num, is_correct=False):
+    def __init__(self, terms_with_coeffs, obj_val, mae, mae_norm, shd, runtime, iter_num, is_correct=False):
         self.terms_with_coeffs = terms_with_coeffs
         self.obj_val = obj_val
         self.mae = mae
+        self.mae_norm = mae_norm
         self.shd = shd
         self.iter_num = iter_num
         self.runtime = runtime
@@ -67,24 +68,51 @@ class EqEvaluator(object):
         shd = len(add_correct_set) + len(delete_wrong_set)
         return shd
 
+    def eval_mae_norm(self, eval_incorrect_eq=False):
+        if set(self.terms_with_coeffs.keys()) == set(self.correct_coeffs.keys()):
+            mae1, mae2 = 0.0, 0.0
+            for key in self.terms_with_coeffs.keys():
+                if self.correct_coeffs[key] != 0:
+                    mae1 += np.fabs(self.correct_coeffs[key] - self.terms_with_coeffs[key]) / abs(self.correct_coeffs[key])
+                    mae2 += np.fabs(-self.correct_coeffs[key] - self.terms_with_coeffs[key]) / abs(self.correct_coeffs[key])
+            mae = min(mae1, mae2)
+            return mae / len(self.terms_with_coeffs)
+
+        return None
 
 class FrontReranker(object):
     def __init__(self, iter_info: list[EqInfo]):
         self.iter_info = iter_info
         self.best_info = None
 
-    def select_best(self):
-        if len(self.iter_info) != 0:
-            min_mae, min_idx = 10000., 0
-            for i, eq_info in enumerate(self.iter_info):
-                if eq_info.mae < min_mae:
-                    min_mae = eq_info.mae
-                    min_idx = i
+    def select_best(self, metric):
+        if metric == "mae":
+            if len(self.iter_info) != 0:
+                min_mae, min_idx = 10000., 0
+                for i, eq_info in enumerate(self.iter_info):
+                    if eq_info.mae < min_mae:
+                        min_mae = eq_info.mae
+                        min_idx = i
 
-            self.best_info = self.iter_info[min_idx]
-            return self.best_info
-        else: return EqInfo(None, None, None, None, None, None, None)
+                self.best_info = self.iter_info[min_idx]
+                return self.best_info
+            else:
+                return EqInfo(None, None, None, None, None, None, None)
 
+        elif metric == "shd":
+            if len(self.iter_info) != 0:
+                min_shd, min_idx = 10000., 0
+                for i, eq_info in enumerate(self.iter_info):
+                    if eq_info.shd < min_shd:
+                        min_shd = eq_info.shd
+                        min_idx = i
+
+                self.best_info = self.iter_info[min_idx]
+                return self.best_info
+            else:
+                return EqInfo(None, None, None, None, None, None, None)
+        else:
+            return EqInfo(None, None, None, None, None, None, None)
 
 class EqReranker(object):
     def __init__(self, run_eq_info: list[EqInfo], dir_name: str):
@@ -92,33 +120,53 @@ class EqReranker(object):
         self.dir_name = dir_name
         self.best_run_inf = []
 
-    def select_best(self):
-        min_mae, min_idx = 10000., 0
-        iter_idx = 0
-        for i, eq_info in enumerate(self.run_eq_info):
+    def select_best(self, metric):
+        if metric == "mae":
+            min_mae, min_idx = 10000., 0
+            iter_idx = 0
+            for i, eq_info in enumerate(self.run_eq_info):
 
-            if eq_info.iter_num != iter_idx:
-                self.best_run_inf.append(self.run_eq_info[min_idx])
-                min_mae = 10000.
-                iter_idx += 1
+                if eq_info.iter_num != iter_idx:
+                    self.best_run_inf.append(self.run_eq_info[min_idx])
+                    min_mae = 10000.
+                    iter_idx += 1
 
-            if eq_info.mae < min_mae:
-                min_mae = eq_info.mae
-                min_idx = i
+                if eq_info.mae < min_mae:
+                    min_mae = eq_info.mae
+                    min_idx = i
 
-        self.best_run_inf.append(self.run_eq_info[min_idx])
-        return self.best_run_inf
+            self.best_run_inf.append(self.run_eq_info[min_idx])
+            return self.best_run_inf
 
-    def to_csv(self):
-        header = ['mae', 'shd', 'runtime']
-        file_path = os.path.join(PARENT_PATH, "epde_eq_parse", "metrics", f'{self.dir_name}_metrics.csv',)
+        elif metric == "shd":
+            min_shd, min_idx = 10000., 0
+            iter_idx = 0
+            for i, eq_info in enumerate(self.run_eq_info):
+
+                if eq_info.iter_num != iter_idx:
+                    self.best_run_inf.append(self.run_eq_info[min_idx])
+                    min_shd = 10000.
+                    iter_idx += 1
+
+                if eq_info.shd < min_shd:
+                    min_shd = eq_info.shd
+                    min_idx = i
+
+            self.best_run_inf.append(self.run_eq_info[min_idx])
+            return self.best_run_inf
+        else:
+            return None
+
+    def to_csv(self, package="epde_eq_parse", experiment_info="test"):
+        header = ['mae', 'mae_norm', 'shd', 'runtime']
+        file_path = os.path.join(PARENT_PATH, package, "metrics", f'{self.dir_name}_metrics_{experiment_info}.csv',)
 
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(header)
 
             for eq_info in self.best_run_inf:
-                writer.writerow([eq_info.mae, eq_info.shd, eq_info.runtime])
+                writer.writerow([eq_info.mae, eq_info.mae_norm, eq_info.shd, eq_info.runtime])
 
 
 # class ResExporter(object):
@@ -140,7 +188,8 @@ def evaluate_fronts(pareto_fronts, dir_name, runtime, iter_num):
                 eq_eval = EqEvaluator(dir_name, terms_with_coeffs)
                 mae = eq_eval.eval_mae()
                 shd = eq_eval.eval_shd()
-                eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, mae, shd, runtime, iter_num, True)
+                mae_norm = eq_eval.eval_mae_norm()
+                eq_info = EqInfo(terms_with_coeffs, soeq.obj_fun, mae, mae_norm, shd, runtime, iter_num, True)
                 # shd, time, iter_num)
                 iter_eq_info.append(eq_info)
                 save_equation(eq_info, dir_name, iter_num)
