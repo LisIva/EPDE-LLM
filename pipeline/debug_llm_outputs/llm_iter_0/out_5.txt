@@ -1,0 +1,29 @@
+From the points_set we see that when t and x are equal to zero, derivatives in du^2/dt^2 and du^2/dx^2 are effectively zero while du/dt, du/dx and u aren't. This hints at the possibility where du/dt is directly dependent on du/dx or u. Let's start with a hypothesis that du/dt might be linearly dependent on du/dx and u while c[^2] is a constant. This could potentially reveal any inexplicit interaction between du/dx, u, and t. This comes from the observation that du/dt, du/dx, and u are non-zero even when t and x are equal to zero but d^2u/dt^2 and d^2u/dx^2 are almost negligible.
+
+based on the exp_buffer four equations have been explored. 
+- du/dt = c[0] * du/dx
+- du/dt = c[0] * d^2u/dt^2 + c[1] * du/dx * u
+- du/dt = c[0] * t * du/dx + c[1] * u * du/dx + c[2] * u * d^2u/dx^2
+- du/dt = c[0] * du/dx * u + c[1] * d^2u/dx^2
+- du/dt = c[0] * t * du/dx + c[1] * u * du/dx + c[2] * d^2u/dx^2 + c[3]
+
+Thus four equations have the derivative du/dx in their right side. This indicates that derivatives in du^2/dt^2 and du^2/dx^2 might not be affecting du/dt directly. And the interaction of t, x, du/dx, and u is yet to be explored. 
+
+So the new equation could be:
+
+Given that du/dt is dependent on du/dx and u under certain conditions where t and x are zero, we imply that du/dt could potentially be dependent on the interaction of du/dx, u, and t. This comes from the observation that du/dt, du/dx, and u are non-zero even when t and x are equal to zero but d^2u/dt^2 and d^2u/dx^2 are almost negligible.
+
+based on the exp_buffer this equation has not been explored yet:
+
+du/dt = c[0]*t + c[1]*du/dx + c[2]*u
+
+Now the equation, "du/dt = c[0] * du/dx" has already been explored so a new form that includes t and u should be explored in the form of:
+
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    right_side = params[0]*t + params[1]*derivs_dict["du/dx"] + params[2]*u
+    string_form_of_the_equation = "du/dt = c[0]*t + c[1]*du/dx + c[2]*u"
+    len_of_params = 3
+    return right_side, string_form_of_the_equation, len_of_params
+
+```

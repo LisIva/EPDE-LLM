@@ -1,3 +1,6 @@
+import re
+
+
 def find_eq_positions(response=None, path: str = 'out_0.txt', encoding: str = None):
     if response is None:
         with open(path, 'r', encoding=encoding) as myf:
@@ -56,8 +59,10 @@ def replace_wrong_coeffs(eq_text):
         return eq_text
     else:
         str_new = str_old.replace('{params', 'c')
+        str_new = str_new.replace("{}", "_curved_braces_open_close")
         str_new = str_new.replace("{", "")
         str_new = str_new.replace("}", "")
+        str_new = str_new.replace("_curved_braces_open_close", "{}")
         return eq_text.replace(str_old, str_new)
 
 
@@ -76,6 +81,44 @@ def add_tabulation(context):
     return new_context
 
 
+def replace_wrong_u_call(eq1_fun_text: str):
+    return eq1_fun_text.replace("derivs_dict[\"u\"]", "u")
+
+
+def replace_wrong_lenparams(eq1_fun_text):
+    if eq1_fun_text.find("len_of_params = P") != -1 or eq1_fun_text.find("len_of_params = len(params)") != -1:
+        param_indices = re.findall(r'params\[(\d+)\]', eq1_fun_text)
+        if len(param_indices) != 0:
+            eq_str = eq1_fun_text.replace("len_of_params = P", f"len_of_params = {len(param_indices)}")
+            return eq_str.replace("len_of_params = len(params)", f"len_of_params = {len(param_indices)}")
+        else:
+            eq_str = eq1_fun_text.replace("len_of_params = P", f"len_of_params = 1")
+            return eq_str.replace("len_of_params = len(params)", f"len_of_params = 1")
+    elif eq1_fun_text.find("len_of_params = 0") != -1:
+        eq_str = eq1_fun_text.replace("len_of_params = 0", f"len_of_params = 1")
+
+        start_idx = eq_str.find("right_side = ")
+        eq_str = eq_str[:start_idx + len("right_side = ")] + "params[0] * " + eq_str[start_idx + len("right_side = "):]
+
+        start_idx1 = eq_str.find("string_form_of_the_equation = ")
+        start_idx2 = eq_str[start_idx1 + len("string_form_of_the_equation = "):].find(" = ")
+        start_idx3 = start_idx1 + start_idx2 + len("string_form_of_the_equation = ") + 3
+
+        eq_str = eq_str[:start_idx3] + "c[0] * " + eq_str[start_idx3:]
+        return eq_str
+    else: return eq1_fun_text
+
+
+def replace_header(eq1_fun_text):
+    start_idx = eq1_fun_text.find("\n")
+    true_header = "def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict, params: np.ndarray):"
+    return true_header + eq1_fun_text[start_idx:]
+
+
+def replace_number_formatting(eq1_fun_text):
+    return re.sub(r':\.\d+f\b', '', eq1_fun_text)
+
+
 def compose_equation_v1_fun(response=None, path='out_0.txt'):
     begin_pos, end_pos_newstr, context, undefined_begin = find_eq_positions(response=response, encoding="utf-8", path=path)
     if undefined_begin:
@@ -86,7 +129,11 @@ def compose_equation_v1_fun(response=None, path='out_0.txt'):
 
     eq1_fun_text = replace_wrong_coeffs(eq1_fun_text)
     eq1_fun_text = replace_wrong_signs(eq1_fun_text)
+    eq1_fun_text = replace_wrong_lenparams(eq1_fun_text)
     eq1_fun_text = replace_wrong_signs(eq1_fun_text, code_type='right_side')
+    eq1_fun_text = replace_wrong_u_call(eq1_fun_text)
+    eq1_fun_text = replace_header(eq1_fun_text)
+    eq1_fun_text = replace_number_formatting(eq1_fun_text)
     return eq1_fun_text
 
 

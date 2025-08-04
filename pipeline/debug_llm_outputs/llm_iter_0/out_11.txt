@@ -1,0 +1,19 @@
+Based on the provided data and previous attempts, the next structure to explore could look like a combination of existing derivatives, but with the introduction of a multiplication that hasn't been considered yet (`du/dx * d^2u/dx^2`). While playing with the coefficients, we find an interesting relation. Remember that the goal is to decrease the score as much as possible and the previous best score was 37.1. Let's add `du/dt` to the structure. Even though it seems odd, keep in mind that `du/dt` is a derivative (and not a variable).
+
+```python
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict, params: np.ndarray):
+    right_side = params[0] * derivs_dict["du/dx"] * derivs_dict["d^2u/dx^2"] + params[1] * derivs_dict["du/dt"] 
+    string_form_of_the_equation = "du/dt = c[0] * du/dx * d^2u/dx^2 + c[1] * du/dt"
+    len_of_params = 2
+    return right_side, string_form_of_the_equation, len_of_params
+```
+
+Note that the order of terms in both 'right_side' and 'string_form_of_the_equation' must match. 'c[0]' and 'c[1]' are placeholders for coefficients that will be refined during the optimization phase using the evaluate function. Since 'du/dt' is included in our function, confirmed by the structure of the function. Make sure to declare 'du/dt' as dependent variable in the string-form! 'c[0]' and 'c[1]' are to be optimally determined.
+
+We start by considering simpler structures (such as 'du/dt') derived from the dataset at hand, expanding our equations gradually as necessitated.
+
+Let us note that, since du/dt is our target variable and we shouldn't account it into the right hand side of the equation, remember that the function has to depend on at least one derivative, therefore we can leave 'du/dt' out of the RHS part. Nonetheless we can explore the structure 'du/dt = c[0] * du/dx * d^2u/dx^2 + c[1] * u * d^2u/dx^2' further.
+
+Keep the previous attempts in mind, as well as the dependency on at least one derivative, considering the decrease of the score, we investigate the influence of 'u' in this version of the structure. 'c[0]' and 'c[1]' are placeholders for coefficients that will be refined during the optimization phase using the evaluate function. Since 'du/dt' is included in our function, confirmed by the structure of the function 'du/dt = c[0] * du/dx * d^2u/dx^2 + c[1] * u * d^2u/dx^2'.
+
+In consideration of the dependency on 'u', 'du/dt' is understood as being dependent on 't' and 'x', and thus the construction 'du/dt = c[0] * du/dx * d^2u/dx^2 + c[1] * u * d^2u/dx^2' aims to infer any inexplicit interactions between 't', 'x' and the derivatives through 'u' and its derivatives. That said, 'c[0]' and 'c[1]' are to be optimally determined.

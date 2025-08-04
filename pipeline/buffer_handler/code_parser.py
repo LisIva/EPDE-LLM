@@ -116,7 +116,7 @@ class RSExtractor(object):
 
         # extract rs_code according to its format
         if self.has_indirect_multiline(first_line_pos, self.cut_text):
-            self.extract_indirect_multiline(first_line_pos)
+            self.rs_code = self.extract_indirect_multiline(first_line_pos)
         elif self.has_multiline(first_line_pos, self.cut_text): # devided by "\\"
             self.rs_code = self.extract_multiline(first_line_pos)
         elif self.has_split_code(first_line_pos, self.cut_text): # multiple "right_side ="
@@ -142,7 +142,7 @@ class RSExtractor(object):
     def extract_indirect_multiline(self, line_pos):
         rs_code = self.cut_text
         while self.has_indirect_multiline(line_pos, rs_code):
-            rs_code = rs_code[:line_pos - 1] + rs_code[line_pos + 1:]
+            rs_code = rs_code[:line_pos] + rs_code[line_pos + 1:]
             line_pos = rs_code[line_pos + 1:].find("\n") + line_pos + 1
         return rs_code[len("right_side="):line_pos]
 

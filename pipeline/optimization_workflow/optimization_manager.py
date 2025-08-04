@@ -3,15 +3,19 @@ from pipeline.buffer_handler.eq_buffer import EqBuffer
 from pipeline.get_llm_response import get_response, get_debug_response
 from pipeline.rebuild_prompt import rebuild_prompt
 from pipeline.buffer_handler.eq_pruner import Pruner
-from pipeline.clean_directories import clean_output_dir, reset_prompt_to_init
+from pipeline.clean_directories import clean_output_dir, reset_prompt_to_init, create_llm_iter_n_folders, delete_out_folders
 from tqdm import tqdm
 import sys
 import traceback
+import os
 
 
 class OptManager:
     def __init__(self, max_iter, start_iter, refine_point=100, dir_name='burg', debug=True, print_exc=True,
-                 exit_code=True, resample_shape=(20, 20), n_candidates=4):
+                 exit_code=True, resample_shape=(20, 20), n_candidates=4, llm_iter=0):
+        if not debug and llm_iter == 0:
+            delete_out_folders()
+
         self.exit_code = exit_code
         self.debug = debug
         self.print_exc = print_exc
@@ -19,6 +23,7 @@ class OptManager:
         self.start_iter = start_iter
         self.max_iter = max_iter
         self.dir_name = dir_name
+        self.llm_iter = llm_iter
 
         self.evaluator = Evaluator(dir_name, resample_shape)
         self.eq_buffer = EqBuffer()
@@ -43,9 +48,11 @@ class OptManager:
         if self.start_iter == 0:
             while True:
                 try:
+                    create_llm_iter_n_folders(self.llm_iter)
                     if not self.debug:
-                        clean_output_dir()
-                    reset_prompt_to_init()
+                        clean_output_dir(self.llm_iter)
+                    reset_prompt_to_init(self.llm_iter)
+
                     new_prompt, score, str_equation, params = self.perform_step(file_name="zero-iter.txt", num=0)
                     self.start_iter = 1
                     break
@@ -69,9 +76,9 @@ class OptManager:
 
     def perform_step(self, file_name, num):
         if self.debug:
-            response = get_debug_response(num=num)
+            response = get_debug_response(llm_iter=self.llm_iter, num=num)
         else:
-            response = get_response(file_name=file_name, num=num, dir_name=self.dir_name, print_info=False)
+            response = get_response(file_name=file_name, llm_iter=self.llm_iter, num=num, dir_name=self.dir_name, print_info=False)
         score, eq_string, params = self.evaluator.llm_response_eval(response, self.eq_buffer)
-        new_prompt, old_prompt = rebuild_prompt(eq_string, score, response, num=num, file_name=file_name)
+        new_prompt, old_prompt = rebuild_prompt(eq_string, score, response, num=num, llm_iter=self.llm_iter, file_name=file_name)
         return new_prompt, score, eq_string, params
