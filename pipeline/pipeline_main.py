@@ -5,13 +5,13 @@ import time
 import traceback
 import re
 
-max_llm_run = 1
+max_llm_run = 23
 max_iter = 30
 dir_name = 'burg_sindy'
 start_iter = 0
 refine_point = 100
 
-debug = True # True False
+debug = False # True False
 print_exc = True
 exit_code = False
 
@@ -24,7 +24,11 @@ if __name__ == '__main__':
         opt_manager = OptManager(max_iter, start_iter, refine_point, dir_name, debug, print_exc, exit_code,
                                  resample_shape=(20, 20), n_candidates=4, llm_iter=llm_iter_num)
         opt_manager.explore_solutions()
-        pruned_track, by_project_track = opt_manager.call_pruner()
+        try:
+            pruned_track, by_project_track = opt_manager.call_pruner()
+        except Exception as e:
+            print(f"\nException occurred during pruning stage on llm_iter #{llm_iter_num}:")
+            print(traceback.format_exc())
 
         t2 = time.time()
 
