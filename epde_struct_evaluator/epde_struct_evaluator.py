@@ -26,7 +26,7 @@ class TrackEvaluator(object):
         self.runtime = runtime
         self.iter_num = iter_num
 
-    def evaluate(self):
+    def evaluate(self, metric="shd"):
         run_eq_info = []
         for eq_key in self.pruned_track.keys():
             struct_conv = StructEvaluator(self.dir_name, self.records_track[eq_key].params, eq_key)
@@ -39,7 +39,7 @@ class TrackEvaluator(object):
             if len(run_eq_info_filtered) == 0:
                 return EqInfo(None, None, None, None, None, None, None)
             front_r = FrontReranker(run_eq_info_filtered)
-            return front_r.select_best()
+            return front_r.select_best(metric)
         else:
             print('An empty list of equations was received from the LLM')
             return None
