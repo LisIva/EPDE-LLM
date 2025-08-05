@@ -1,0 +1,3 @@
+[submodule "EPDE"]
+	path = EPDE
+	url = https://github.com/ITMO-NSS-team/EPDE
