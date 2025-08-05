@@ -16,6 +16,7 @@ def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict()
     len_of_params = 1  # There is only one parameter in the equation (c[0]).
     string_form_of_the_equation = "du/dt = c[0] * du/dx * x * u"
     return right_side, string_form_of_the_equation, len_of_params
+
 ```
 
 Just to be clear, in this equation, c[0] is used as a parameter that might take on the appropriate value to fit the data.

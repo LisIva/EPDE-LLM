@@ -15,3 +15,6 @@ pyvenv.cfg
 share/
 epde/
 epde_eq_parse/parsed_eqs
+pipeline/debug_llm_outputs
+pipeline/prompt/llm_iter_*/
+pipeline/metrics

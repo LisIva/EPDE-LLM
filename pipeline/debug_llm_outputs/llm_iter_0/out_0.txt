@@ -1,23 +1,24 @@
-Given the data from the points_set, a simple first-order relationship between the rate of change of u (du/dt) and the derivative of u w.r.t x (du/dx) emerges as a plausible fit.
+Based on the given data, it appears a simple relationship could exist between du/dt and du/dx. The data shows a trend where du/dt seems to vary linearly with du/dx. Therefore, you can describe the relationship as du/dt = c[0] * du/dx. We can use this proposed equation fit the given points thus:
 
 ```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict, params: np.ndarray):
-    # Initial guess of 1.0 for the parameter 'c[0]'
-    P = 1
-    # Fitting du/dt = c[0] * du/dx
-    right_side = params[0] * derivs_dict["du/dx"]
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
+    right_side = params[0]*derivs_dict["du/dx"]
     string_form_of_the_equation = "du/dt = c[0] * du/dx"
-    len_of_params = 1
+    len_of_params = 1 # This fit equation has only one parameter to optimize
     return right_side, string_form_of_the_equation, len_of_params
+
+inputs = [np.array([row[0] for row in points_set]), np.array([row[1] for row in points_set]), np.array([row[2] for row in points_set])]
+derivs_dict = {"du/dx":np.array([row[-3] for row in points_set]), "d^2u/dx^2":np.array([row[-1] for row in points_set])}
+
+# Set number of parameters to be optimized 
+P = 1
+
+params = np.ones(P)
+
+score = evaluate({"inputs":inputs, "derivs_dict":derivs_dict})
+print(score)
+
 ```
-
-Here, the parameter "c[0]" will be optimized using scipy's minimize function to minimize the squared difference between predicted du/dt (based on the derivative du/dx) and actual du/dt available in the data.
-
-Use the evaluate function to get the score for this simple equation:
-
-```python
-score = evaluate({"inputs": [t, x, u], "derivs_dict": derivs_dict})
-print(f'Score: {score}')  # Lower is better
-```
-
-It is important to note, however, that this simple relationship may not fit complex multi-variable dependencies in the data. Higher accuracy might be obtained by considering models with more parameters (e.g., du/dt = c[0]*du/dx + c[1]*d^2u/dx^2) or non-linear relationships (e.g., du/dt = c[0]*(du/dx)**2). But without prior knowledge or theory suggesting these relationships, the simplest case tested here is a valid starting point.
+Modify the input data extraction based on your data structure, as I have assumed the dataset is in list form here.
+  
+Please note, the variable points_set seems to present more data thus make sure to comment out the unnecessary lines since I have only used the t, x, and du/dx values. Based on your requirements, you can customize the data fetch in your code too.

@@ -1,51 +1,9 @@
-Based on the provided data and the constraint that the equation must include at least one derivative, I can construct an equation that isn't currently in the `exp_buffer` dictionary. I'll consider an equation of the form:
-
-```
-du/dt = c[0] * du/dx + c[1] * (du/dt) * u
-```
-
-Now translating this equation to a function in Python and since `du/dt` is not explicitly given in the function input, I will use the left-hand side `u_pred` directly for the `du/dt` term. The equation will look something like this:
-
-```python
-du/dt = c[0] * du/dx + c[1] * u * u_pred
-```
-
-However, in order to keep the format consistent with the requirements and not use the variable containing `du/dt` directly in the equation but utilizing the right hand side predicted `u_pred` computed by the equation, I should change the equation to eliminate `u_pred` in the equation, but such a change seems to be contradictory to the requirements. Hence, I'll implement the aforementioned equation slightly differently:
-
+Based on the provided data, the function `du/dt = F(t, x, u, du/dx, d^2u/dt^2, d^2u/dx^2)` could possibly be described as `du/dt = c[0] * du/dx * d^2u/dx^2 + c[1] * d^2u/dt^2 * t`. This equation is not found in the `exp_buffer` dataset. Now, let's write the function and check the score of this equation.
 ```python
 def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * u * derivs_dict["u_pred"]
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * u * u_pred"
+    right_side = params[0] * derivs_dict["du/dx"] * derivs_dict["d^2u/dx^2"] + params[1] * derivs_dict["d^2u/dt^2"] * t
+    string_form_of_the_equation = "du/dt = c[0] * du/dx * d^2u/dx^2 + c[1] * d^2u/dt^2 * t"
     len_of_params = 2
     return right_side, string_form_of_the_equation, len_of_params
 ```
-
-But here, I've used `u_pred` directly in the equation and `u_pred` is not part of the inputs of the function. To get around this, I'll modify the implementation slightly in a new function, to implement `u_pred` before using it.
-
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    # Have the computation of u_pred outside of `right_side`
-    u_pred = derivs_dict["du/dt"]  # this is a placeholder and should not influence the final computation
-    
-    # right_side should then adjust based on the newly computed u_pred
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * u * u_pred
-
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * u * u_pred"  # Note that u_pred is the computation result, not du/dt
-    len_of_params = 2  # Since we have two parameters in the equation: c[0] and c[1]
-
-    return right_side, string_form_of_the_equation, len_of_params
-```
-
-However, I have to ensure that the equation is computed correctly without actually including `u_pred` in the computation since it's a variable that's updated inside the computation of `right_side`. 
-
-So, revisiting the points set data, I observe the relationship between `du/dx` and `u`, considering their interaction with `du/dt`. Adjusting the function to reflect only the interactions present in the data:
-
-```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0] * derivs_dict["du/dx"] + params[1] * u * u  # Adjust the equation to what can be applied to the data and captured by the function
-    string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * u * u"  # Representing the updated equation in a string format
-    len_of_params = 2  # Correct number of parameters based on the equation provided
-
-    return right_side, string_form_of_the_equation, len_of_params
-```
-Please adjust the coefficients based on the fitting process following the presenting computational procedure you have, since I simplified it for demonstration purposes. This example captures the essence of a possible equation construction under the given constraints. The updated function in this new format respects all your requirements and also is not already explored within the `exp_buffer`. The equation `du/dt = c[0] * du/dx + c[1] * u * u` fits within all specifications and is ready to be further evaluated.
+Now, to find the best parameters of the equation (optimize the constants `c[0]` and `c[1]`), one can use the provided `evaluate` function on this `equation_v1` function by passing the `points_set` as the input data. If the optimized equation's score is closer to zero, it is a good fit for the data.
