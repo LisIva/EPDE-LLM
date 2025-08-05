@@ -3,6 +3,7 @@ from pipeline.buffer_handler.eq_buffer import EqBuffer
 from pipeline.get_llm_response import get_response, get_debug_response
 from pipeline.rebuild_prompt import rebuild_prompt
 from pipeline.buffer_handler.eq_pruner import Pruner
+from promptconstructor.array_to_txt import Data
 from pipeline.clean_directories import clean_output_dir, reset_prompt_to_init, create_llm_iter_n_folders, delete_out_folders
 from tqdm import tqdm
 import sys
@@ -11,8 +12,8 @@ import os
 
 
 class OptManager:
-    def __init__(self, max_iter, start_iter, refine_point=100, dir_name='burg', debug=True, print_exc=True,
-                 exit_code=True, resample_shape=(20, 20), n_candidates=4, llm_iter=0):
+    def __init__(self, max_iter, start_iter, refine_point=100, debug=True, print_exc=True,
+                 exit_code=True, data_args=None, n_candidates=4, llm_iter=0):
         if not debug and llm_iter == 0:
             delete_out_folders()
 
@@ -22,16 +23,16 @@ class OptManager:
         self.refine_point = refine_point
         self.start_iter = start_iter
         self.max_iter = max_iter
-        self.dir_name = dir_name
+        self.data_args = data_args
         self.llm_iter = llm_iter
 
-        self.evaluator = Evaluator(dir_name, resample_shape)
+        self.evaluator = Evaluator(data_args)
         self.eq_buffer = EqBuffer()
         self._pruner = None
         self._n_parent_cand = n_candidates
 
     def call_pruner(self):
-        self._pruner = Pruner(self.eq_buffer, self.evaluator, self._n_parent_cand, self.dir_name)
+        self._pruner = Pruner(self.eq_buffer, self.evaluator, self._n_parent_cand, self.data_args["dir_name"])
         pruned_track, by_project_track = self._pruner.cut_by_knee()
         return pruned_track, by_project_track
 
@@ -78,7 +79,10 @@ class OptManager:
         if self.debug:
             response = get_debug_response(llm_iter=self.llm_iter, num=num)
         else:
-            response = get_response(file_name=file_name, llm_iter=self.llm_iter, num=num, dir_name=self.dir_name, print_info=False)
+            response = get_response(file_name=file_name, llm_iter=self.llm_iter, num=num,
+                                    dir_name=self.data_args["dir_name"],
+                                    noise_level=self.data_args["noise_level"], print_info=False)
         score, eq_string, params = self.evaluator.llm_response_eval(response, self.eq_buffer)
-        new_prompt, old_prompt = rebuild_prompt(eq_string, score, response, num=num, llm_iter=self.llm_iter, file_name=file_name)
+        new_prompt, old_prompt = rebuild_prompt(eq_string, score, response, num=num,
+                                                llm_iter=self.llm_iter, file_name=file_name)
         return new_prompt, score, eq_string, params

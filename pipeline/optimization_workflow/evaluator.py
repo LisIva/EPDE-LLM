@@ -25,11 +25,15 @@ def eval_metric(params, t, x, u, derivs_dict, left_side):
 
 
 class Evaluator(object):
-    def __init__(self, dir_name='burg', resample_shape=(20, 20)):
-        data_for_eval = Data(dir_name, resample_shape=resample_shape)
+    def __init__(self, data_args):
+        self.data_args = data_args
+        data_for_eval = Data(self.data_args["dir_name"], resample_shape=self.data_args["resample_shape"],
+                             noise_level=self.data_args["noise_level"])
+        if not data_args['use_cached']:
+            data_for_eval.write_resampled_data()
+
         self.data = data_for_eval.eval_data
-        self.left_side = prompt_complete_inf[dir_name]['left_deriv']
-        self.resample_shape = resample_shape
+        self.left_side = prompt_complete_inf[self.data_args["dir_name"]]['left_deriv']
 
     def get_eval_scores(self, eq_str, P):
         eval_error, loss, params = self.evaluate(P)

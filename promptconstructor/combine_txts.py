@@ -13,8 +13,8 @@ if 'pipeline' in PARENT_PATH.parts:
 # string_form_of_the_equation = "du/dt = c[0] * du/dx + c[1] * u * du/dx"
 
 
-def read_eq_data(name):
-    abs_path = os.path.join(PARENT_PATH, "promptconstructor", f"{name}_txu_derivs.txt")
+def read_eq_data(name, noise_level):
+    abs_path = os.path.join(PARENT_PATH, "promptconstructor", f"noise_level_{noise_level}", f"{name}_txu_derivs.txt")
     with open(abs_path, 'r', encoding='utf-8') as myf:
         data = myf.read()
     return data
@@ -36,8 +36,8 @@ def get_simple_burg_prompt():
     return head + data + tail
 
 
-def read_with_langchain(dir_name='burg', path=None):
-    data = read_eq_data(dir_name)
+def read_with_langchain(dir_name='burg', path=None, noise_level=0):
+    data = read_eq_data(dir_name, noise_level)
     with open(path, 'r', encoding='utf-8') as myf:
         prompt_raw = myf.read()
 
@@ -49,8 +49,8 @@ def read_with_langchain(dir_name='burg', path=None):
     return prompt
 
 
-def test_read_with_langchain(prompt_name="points-set-prompt3.txt", dir_name='burg'):
-    data = read_eq_data(dir_name)
+def test_read_with_langchain(prompt_name="points-set-prompt3.txt", dir_name='burg', noise_level=0):
+    data = read_eq_data(dir_name, noise_level)
     # path = os.path.join(PARENT_PATH, "prompts", "text-llms", prompt_name)
     path = 'reset-for-continue.txt'
     with open(path, 'r', encoding='utf-8') as myf:
