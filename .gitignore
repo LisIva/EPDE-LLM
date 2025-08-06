@@ -18,4 +18,3 @@ epde_eq_parse/parsed_eqs
 pipeline/debug_llm_outputs
 pipeline/prompts/llm_iter_*/
 pipeline/metrics
-data/noise_level_*
