@@ -30,9 +30,14 @@ def get_debug_response(llm_iter=0, num=0):
 
 
 def get_response(file_name="continue-iter.txt", llm_iter=0, num=0, dir_name='burg', noise_level=0, print_info=False):
+    # client = OpenAI(
+    #     api_key=creds.api_key,
+    #     base_url="https://api.vsegpt.ru/v1")
+
     client = OpenAI(
-        api_key=creds.api_key,
-        base_url="https://api.vsegpt.ru/v1")
+        base_url="https://openrouter.ai/api/v1",
+        api_key=creds.api_key_router,
+    )
 
     if file_name != "zero-iter.txt":
         prompt_path = os.path.join(PARENT_PATH, "pipeline", "prompts", f"llm_iter_{llm_iter}", file_name)
@@ -41,13 +46,21 @@ def get_response(file_name="continue-iter.txt", llm_iter=0, num=0, dir_name='bur
 
     prompt = read_with_langchain(path=prompt_path, dir_name=dir_name, noise_level=noise_level) # 2446 base len
     messages = [{"role": "user", "content": prompt}]
+
     response_big = client.chat.completions.create(
-        model=MODEL,
+        model="qwen/qwen-2.5-72b-instruct",
         messages=messages,
         temperature=1.0,
         n=1,
         max_tokens=2000, # максимальное число ВЫХОДНЫХ токенов
         extra_headers={ "X-Title": "EPDELLM"},)
+    # response_big = client.chat.completions.create(
+    #     model=MODEL,
+    #     messages=messages,
+    #     temperature=1.0,
+    #     n=1,
+    #     max_tokens=2000, # максимальное число ВЫХОДНЫХ токенов
+    #     extra_headers={ "X-Title": "EPDELLM"},)
 
     response = response_big.choices[0].message.content
     if print_info:
