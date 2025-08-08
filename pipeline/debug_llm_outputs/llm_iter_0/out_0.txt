@@ -1,24 +1,7 @@
-Based on the given data, it appears a simple relationship could exist between du/dt and du/dx. The data shows a trend where du/dt seems to vary linearly with du/dx. Therefore, you can describe the relationship as du/dt = c[0] * du/dx. We can use this proposed equation fit the given points thus:
-
 ```python
-def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
-    right_side = params[0]*derivs_dict["du/dx"]
+def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict, params: np.ndarray):
+    right_side = params[0] * derivs_dict["du/dx"]
     string_form_of_the_equation = "du/dt = c[0] * du/dx"
-    len_of_params = 1 # This fit equation has only one parameter to optimize
+    len_of_params = 1
     return right_side, string_form_of_the_equation, len_of_params
-
-inputs = [np.array([row[0] for row in points_set]), np.array([row[1] for row in points_set]), np.array([row[2] for row in points_set])]
-derivs_dict = {"du/dx":np.array([row[-3] for row in points_set]), "d^2u/dx^2":np.array([row[-1] for row in points_set])}
-
-# Set number of parameters to be optimized 
-P = 1
-
-params = np.ones(P)
-
-score = evaluate({"inputs":inputs, "derivs_dict":derivs_dict})
-print(score)
-
 ```
-Modify the input data extraction based on your data structure, as I have assumed the dataset is in list form here.
-  
-Please note, the variable points_set seems to present more data thus make sure to comment out the unnecessary lines since I have only used the t, x, and du/dx values. Based on your requirements, you can customize the data fetch in your code too.
