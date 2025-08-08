@@ -12,6 +12,7 @@ Requirements:
 2. Do not copy the equations from the exp_buffer!
 3. Only give a simplified version of the equation in string_form_of_the_equation: always open the brackets, for ex. instead of 'du/dt = c[0] * (1 + du/dx) * t' return 'du/dt = c[0] * t + c[1] * du/dx * t'.
 4. Higher order derivatives must be referenced as d^nu/dx^n or d^nu/dt^n, where n is an integer (for example, d^2u/dx^2 and NOT du^2/dx^2). Anything like du^n/dx^n refer to the multiplication of du/dx and should be written as (du/dx)^n or (du/dx)**n (same apply to du/dt).
+5. Do not put {left_deriv} into the right side of the equation as a standalone term, you can though use it as part of a term: ..+ {left_deriv} * u +.. for example
 
 import numpy as np
 from scipy.optimize import minimize
@@ -50,7 +51,7 @@ exp_buffer = {{
 ```python
 def equation_v1(t: np.ndarray, x: np.ndarray, u: np.ndarray, derivs_dict: dict(), params: np.ndarray):
     right_side = params[0] * derivs_dict["du/dx"]
-    string_form_of_the_equation = "du/dt = c[0] * du/dx"
+    string_form_of_the_equation = "{left_deriv} = c[0] * du/dx"
     len_of_params = 1
     return right_side, string_form_of_the_equation, len_of_params
 
