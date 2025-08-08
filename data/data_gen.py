@@ -86,26 +86,39 @@ def gen_derivs(noise_level, dataset, i):
 
     np.save(os.path.join(full_path, "u"), data)
 
-    for i in range(t_deriv_order):
-        if i == 0:
-            np.save(os.path.join(full_path, "du_dx1"), derivs['u'][:, i])
-        else:
-            np.save(os.path.join(full_path, f"d^{i}u_dx1^{i}"), derivs['u'][:, i])
+    if noise_level == 0:
+        for i in range(t_deriv_order):
+            if i == 0:
+                np.save(os.path.join(full_path, "du_dx1"), derivs['u'][:, i])
+            else:
+                np.save(os.path.join(full_path, f"d^{i+1}u_dx1^{i+1}"), derivs['u'][:, i])
 
-    for i in range(x_deriv_order):
-        if i == 0:
-            np.save(os.path.join(full_path, "du_dx2"), derivs['u'][:, i + t_deriv_order])
-        else:
-            np.save(os.path.join(full_path, f"d^{i}u_dx2^{i}"), derivs['u'][:, i + t_deriv_order])
+        for i in range(x_deriv_order):
+            if i == 0:
+                np.save(os.path.join(full_path, "du_dx2"), derivs['u'][:, i + t_deriv_order])
+            else:
+                np.save(os.path.join(full_path, f"d^{i+1}u_dx2^{i+1}"), derivs['u'][:, i + t_deriv_order])
+    else:
+        for i in range(t_deriv_order):
+            if i == 0:
+                np.save(os.path.join(full_path, "du_dx1"), derivs['u'][:, i].reshape(data.shape))
+            else:
+                np.save(os.path.join(full_path, f"d^{i+1}u_dx1^{i+1}"), derivs['u'][:, i].reshape(data.shape))
 
+        for i in range(x_deriv_order):
+            if i == 0:
+                np.save(os.path.join(full_path, "du_dx2"), derivs['u'][:, i + t_deriv_order].reshape(data.shape))
+            else:
+                np.save(os.path.join(full_path, f"d^{i+1}u_dx2^{i+1}"), derivs['u'][:, i + t_deriv_order].reshape(data.shape))
 
 if __name__ == "__main__":
-    noise_level = 0
+    noise_level = 0.1
+    single = True
     iters = 30
     datasets = ["burg", "burg_sindy", "kdv", "wave"]
 
     for dataset in datasets:
-        if noise_level == 0:
+        if noise_level == 0 or single:
             gen_derivs(noise_level, dataset, None)
         else:
             for i in range(iters):

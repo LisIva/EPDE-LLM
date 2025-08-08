@@ -85,7 +85,7 @@ class Data(object):
         path = os.path.join(PARENT_PATH, "promptconstructor", f"noise_level_{self.noise_level}")
         os.makedirs(path, exist_ok=True)
 
-        file_name = f'noise_level_{self.noise_level}/{self.dir_name}_txu_derivs.txt'
+        file_name = os.path.join(path, f"{self.dir_name}_txu_derivs.txt")
         rounded_ls, names_data = self.round()
         with open(file_name, 'w') as myf:
             for aij in zip(*rounded_ls):
