@@ -5,17 +5,17 @@ import time
 import traceback
 import re
 
-max_llm_run = 1
-max_iter = 2
+max_llm_run = 2
+max_iter = 20
 start_iter = 0
 refine_point = 100
 
 data_args = {"resample_shape": (20, 20),
              "use_cached": True,
              "noise_level": 0,
-             "dir_name": "burg_sindy"}
+             "dir_name": "kdv_sindy"}
 
-debug = True # True False
+debug = False # True False
 print_exc = True
 exit_code = False
 

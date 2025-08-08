@@ -82,7 +82,8 @@ class Data(object):
         return resampled_for_truncation
 
     def write_resampled_data(self):
-        os.makedirs(f"noise_level_{self.noise_level}", exist_ok=True)
+        path = os.path.join(PARENT_PATH, "promptconstructor", f"noise_level_{self.noise_level}")
+        os.makedirs(path, exist_ok=True)
 
         file_name = f'noise_level_{self.noise_level}/{self.dir_name}_txu_derivs.txt'
         rounded_ls, names_data = self.round()

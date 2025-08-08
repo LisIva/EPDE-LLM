@@ -9,6 +9,7 @@ import os
 
 PARENT_PATH = Path(os.path.dirname(__file__)).parent
 class EqInfo(object):
+    # EqInfo(self.terms_with_coeffs, loss, mae, shd, runtime, iter_num, eq_eval.is_correct_schema)
     def __init__(self, terms_with_coeffs, obj_val, mae, mae_norm, shd, runtime, iter_num, is_correct=False):
         self.terms_with_coeffs = terms_with_coeffs
         self.obj_val = obj_val

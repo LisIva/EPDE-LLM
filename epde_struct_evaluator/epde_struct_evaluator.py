@@ -30,6 +30,7 @@ class TrackEvaluator(object):
         run_eq_info = []
         for eq_key in self.pruned_track.keys():
             struct_conv = StructEvaluator(self.dir_name, self.records_track[eq_key].params, eq_key)
+
             eq_info = struct_conv.evaluate(self.records_track[eq_key].loss, self.runtime, self.iter_num)
             run_eq_info.append(eq_info)
 
