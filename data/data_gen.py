@@ -55,7 +55,7 @@ def get_data(dataset):
     return grids, u
 
 
-def gen_derivs(noise_level, dataset, i):
+def gen_derivs(noise_level, dataset, i=None):
     if i is not None:
         full_path = Path(os.path.join(Path().absolute().parent, f"data/noise_level_{noise_level}/", f"{dataset}/", f"{i}/"))
     else:
@@ -113,7 +113,7 @@ def gen_derivs(noise_level, dataset, i):
 
 if __name__ == "__main__":
     noise_level = 0.1
-    single = True
+    single = False
     iters = 30
     datasets = ["burg", "burg_sindy", "kdv", "wave"]
 
