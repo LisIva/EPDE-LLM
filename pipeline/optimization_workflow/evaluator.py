@@ -5,6 +5,7 @@ from pipeline.optimization_workflow.complexity_evaluation import eval_complexity
 from promptconstructor.array_to_txt import Data
 from promptconstructor.info_prompts import prompt_complete_inf
 from pipeline.buffer_handler.code_parser import RSExtractor
+from data import data_gen
 import traceback
 
 
@@ -30,6 +31,7 @@ class Evaluator(object):
         data_for_eval = Data(self.data_args["dir_name"], resample_shape=self.data_args["resample_shape"],
                              noise_level=self.data_args["noise_level"])
         if not data_args['use_cached']:
+            data_gen.gen_derivs(self.data_args["noise_level"], self.data_args["dir_name"])
             data_for_eval.write_resampled_data()
 
         self.data = data_for_eval.eval_data
