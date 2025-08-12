@@ -14,8 +14,9 @@ class StructEvaluator(object):
     def evaluate(self, loss, runtime, iter_num):
         eq_eval = EqEvaluator(self.dir_name, self.terms_with_coeffs)
         mae = eq_eval.eval_mae(False)
+        mae_norm = eq_eval.eval_mae_norm()
         shd = eq_eval.eval_shd()
-        return EqInfo(self.terms_with_coeffs, loss, mae, shd, runtime, iter_num, eq_eval.is_correct_schema)
+        return EqInfo(self.terms_with_coeffs, loss, mae, mae_norm, shd, runtime, iter_num, eq_eval.is_correct_schema)
 
 
 class TrackEvaluator(object):
