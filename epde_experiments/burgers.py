@@ -29,13 +29,17 @@ def burgers_discovery(noise_level, epochs):
     dir_name = 'burg'
     experiment_info = "noise_" + str(noise_level) + "_epochs_" + str(epochs)
     grid, data = burgers_data()
-    noised_data = noise_data(data, noise_level)
 
     epde_search_obj = EpdeSearch(use_solver=False, use_pic=True, boundary=20,
                                   coordinate_tensors=grid, device='cuda')
 
-    epde_search_obj.set_preprocessor(default_preprocessor_type='FD',
-                                     preprocessor_kwargs={})
+    if noise_level == 0:
+        epde_search_obj.set_preprocessor(default_preprocessor_type='poly',
+                                         preprocessor_kwargs={})
+    else:
+        epde_search_obj.set_preprocessor(default_preprocessor_type='poly',
+                                         preprocessor_kwargs={"use_smoothing": True})
+
     popsize = 8
 
     epde_search_obj.set_moeadd_params(population_size=popsize,
@@ -43,9 +47,10 @@ def burgers_discovery(noise_level, epochs):
     factors_max_number = {'factors_num': [1, 2], 'probas': [0.65, 0.35]}
     bounds = (1e-5, 1e0)
 
-    i, max_iter_number = 0, 50
+    i, max_iter_number = 0, 30
     run_eq_info = []
     while i < max_iter_number:
+        noised_data = noise_data(data, noise_level)
         start = time.time()
         epde_search_obj.fit(data=noised_data, variable_names=['u', ], max_deriv_order=(2, 1), derivs=None,
                             equation_terms_max_number=5, data_fun_pow=3,
@@ -54,8 +59,8 @@ def burgers_discovery(noise_level, epochs):
                             eq_sparsity_interval=bounds, fourier_layers=False) #
         end = time.time()
 
-        epde_search_obj.equations(only_print=True, num=2)
-        res = epde_search_obj.equations(only_print=False, only_str=False, num=2)
+        epde_search_obj.equations(only_print=True, num=1)
+        res = epde_search_obj.equations(only_print=False, only_str=False, num=1)
         iter_info = evaluate_fronts(res, dir_name, end - start, i)
         front_r = FrontReranker(iter_info)
         run_eq_info.append(front_r.select_best('shd'))
@@ -66,13 +71,13 @@ def burgers_discovery(noise_level, epochs):
     eq_r = EqReranker(run_eq_info, dir_name)
     eq_r.best_run_inf = run_eq_info
     # best_info = eq_r.select_best('shd')
-    eq_r.to_csv(experiment_info=experiment_info)
+    eq_r.to_csv(package="epde_experiments", experiment_info=experiment_info)
 
 
 if __name__ == "__main__":
     ''' Parameters of the experiment '''
-    epochs = 4
-    noise_level = 0
+    epochs = 5
+    noise_level = 0.375
     ''''''
 
     burgers_discovery(noise_level=noise_level, epochs=epochs)

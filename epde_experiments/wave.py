@@ -34,26 +34,30 @@ def wave_data():
 
 def wave_discovery(noise_level, epochs):
     data, grids = wave_data()
-    max_iter_number = 50
+
     i = 0
+    max_iter_number = 30
     clean_parsed_out('wave')
     run_eq_info = []
-    noised_data = noise_data(data, noise_level)
+
     boundary = 20
-
-    epde_search_obj = EpdeSearch(use_solver=False, use_pic=True, boundary=boundary,
-                                 coordinate_tensors=grids,
-                                 prune_domain=False,
-                                 device='cuda')
-
-    epde_search_obj.set_preprocessor(default_preprocessor_type='FD',
-                                     preprocessor_kwargs={})  # "use_smoothing": True
-
-    epde_search_obj.set_moeadd_params(population_size=8, training_epochs=epochs)
-
     factors_max_number = {'factors_num': [1, 2], 'probas': [0.65, 0.35]}
 
     while i < max_iter_number:
+        noised_data = noise_data(data, noise_level)
+
+        epde_search_obj = EpdeSearch(use_solver=False, use_pic=True, boundary=boundary,
+                                     coordinate_tensors=grids,
+                                     prune_domain=False,
+                                     device='cuda')
+        if noise_level == 0:
+            epde_search_obj.set_preprocessor(default_preprocessor_type='poly',
+                                             preprocessor_kwargs={})
+        else:
+            epde_search_obj.set_preprocessor(default_preprocessor_type='poly',
+                                             preprocessor_kwargs={"use_smoothing": True})  # "use_smoothing": True
+
+        epde_search_obj.set_moeadd_params(population_size=8, training_epochs=epochs)
 
         start = time.time()
 
@@ -65,8 +69,8 @@ def wave_discovery(noise_level, epochs):
         except IndexError:
             continue
         end = time.time()
-        epde_search_obj.equations(only_print=True, only_str=False, num=2)
-        res = epde_search_obj.equations(only_print=False, only_str=False, num=2)
+        epde_search_obj.equations(only_print=True, only_str=False, num=1)
+        res = epde_search_obj.equations(only_print=False, only_str=False, num=1)
         iter_info = evaluate_fronts(res, 'wave', end - start, i)
         run_eq_info += iter_info
 
@@ -78,13 +82,13 @@ def wave_discovery(noise_level, epochs):
     eq_r = EqReranker(run_eq_info, 'wave')
     best_info = eq_r.select_best('shd')
     experiment_info = "noise_" + str(noise_level) + "_epochs_" + str(epochs)
-    eq_r.to_csv(experiment_info=experiment_info)
+    eq_r.to_csv(package="epde_experiments", experiment_info=experiment_info)
     print()
 
 if __name__ == '__main__':
     ''' Parameters of the experiment '''
-    epochs = 1
-    noise_level = 0
+    epochs = 5
+    noise_level = 0.25
     ''''''
     wave_discovery(noise_level=noise_level, epochs=epochs)
 
