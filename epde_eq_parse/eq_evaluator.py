@@ -152,8 +152,10 @@ class EqReranker(object):
                 if eq_info.shd < min_shd:
                     min_shd = eq_info.shd
                     min_idx = i
-
-            self.best_run_inf.append(self.run_eq_info[min_idx])
+            try:
+                self.best_run_inf.append(self.run_eq_info[min_idx])
+            except:
+                print("No optimal equation found")
             return self.best_run_inf
         else:
             return None
