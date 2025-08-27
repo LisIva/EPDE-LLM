@@ -19,7 +19,7 @@ from epde.interface.interface import EpdeSearch
 
 def noise_data(data, noise_level):
     # add noise level to the input data
-    return noise_level * 0.01 * np.std(data) * np.random.normal(size=data.shape) + data
+    return noise_level * np.std(data) * np.random.normal(size=data.shape) + data
 
 def wave_data():
     base_path = Path().absolute().parent
@@ -45,7 +45,6 @@ def wave_discovery(noise_level, epochs):
 
     while i < max_iter_number:
         noised_data = noise_data(data, noise_level)
-
         epde_search_obj = EpdeSearch(use_solver=False, use_pic=True, boundary=boundary,
                                      coordinate_tensors=grids,
                                      prune_domain=False,
@@ -88,7 +87,7 @@ def wave_discovery(noise_level, epochs):
 if __name__ == '__main__':
     ''' Parameters of the experiment '''
     epochs = 5
-    noise_level = 0.25
+    noise_level = 0
     ''''''
     wave_discovery(noise_level=noise_level, epochs=epochs)
 
