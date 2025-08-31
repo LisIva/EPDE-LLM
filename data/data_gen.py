@@ -33,13 +33,13 @@ def get_data(dataset):
         u = np.transpose(u)
         grids = np.meshgrid(t, x, indexing='ij')
 
-    elif dataset == "kdv":
-        filename = "KdV_sln_100.csv"
-        shape = 100
-        dir_kdv = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), "data_kdv")
-        u = np.loadtxt(os.path.join(dir_kdv, filename), delimiter=',').T
-        t = np.linspace(0, 1, shape + 1)
-        x = np.linspace(0, 1, shape + 1)
+    elif dataset == "kdv_sindy":
+        path_full = os.path.join(Path().absolute().parent, "data_kdv", "kdv.mat")
+        kdV = loadmat(path_full)
+        t = np.ravel(kdV['t'])
+        x = np.ravel(kdV['x'])
+        u = np.real(kdV['usol'])
+        u = np.transpose(u)
         grids = np.meshgrid(t, x, indexing='ij')
 
     elif dataset == "wave":
@@ -52,7 +52,7 @@ def get_data(dataset):
         x = np.linspace(0, 1, 101)
         grids = np.meshgrid(t, x, indexing='ij')
 
-    return grids, u
+    return grids, u, x, t
 
 
 def gen_derivs(noise_level, dataset, i=None):
@@ -66,7 +66,7 @@ def gen_derivs(noise_level, dataset, i=None):
     t_deriv_order = 2
     x_deriv_order = 3
 
-    grid, data = get_data(dataset)
+    grid, data, x, t = get_data(dataset)
     noised_data = noise_data(data, noise_level)
 
     epde_search_obj = EpdeSearch(use_solver=False, use_pic=True, boundary=20,
@@ -84,7 +84,9 @@ def gen_derivs(noise_level, dataset, i=None):
                                 additional_tokens=[])
     derivs = epde_search_obj._derivatives
 
-    np.save(os.path.join(full_path, "u"), data)
+    np.save(os.path.join(full_path, "u"), noised_data)
+    np.save(os.path.join(full_path, "x"), x)
+    np.save(os.path.join(full_path, "t"), t)
 
     if noise_level == 0:
         for i in range(t_deriv_order):
@@ -112,10 +114,10 @@ def gen_derivs(noise_level, dataset, i=None):
                 np.save(os.path.join(full_path, f"d^{i+1}u_dx2^{i+1}"), derivs['u'][:, i + t_deriv_order].reshape(data.shape))
 
 if __name__ == "__main__":
-    noise_level = 0.1
-    single = False
+    noise_level = 10
+    single = True
     iters = 30
-    datasets = ["burg", "burg_sindy", "kdv", "wave"]
+    datasets = ["burg", "burg_sindy", "kdv_sindy", "wave"]
 
     for dataset in datasets:
         if noise_level == 0 or single:
