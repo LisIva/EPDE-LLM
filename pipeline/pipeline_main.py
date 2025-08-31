@@ -6,14 +6,14 @@ import traceback
 import re
 
 max_llm_run = 1
-max_iter = 10
+max_iter = 3
 start_iter = 0
 refine_point = 100
 
 data_args = {"resample_shape": (20, 20),
-             "use_cached": False,
-             "noise_level": 0.1,
-             "dir_name": "wave"}
+             "use_cached": True,
+             "noise_level": 0,
+             "dir_name": "burg_sindy"}
 
 debug = True # True False
 print_exc = True

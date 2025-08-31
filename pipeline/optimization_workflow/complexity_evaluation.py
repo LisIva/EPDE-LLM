@@ -126,5 +126,9 @@ if __name__ == '__main__':
     string = "du/dt = {c} * u * du/dx * exp(1 - log(5 * x + u)) + A[5] * (d^2u/dx^2) ^ 2 - {coeff} * t ^ 2 * u ^ 3"
     string_form_of_the_equation = "du/dt = c[0] * (du/dx)^3 + c[1] * (du/dx)^2 " + \
                               "+ c[2] * t * (u^2) * du/dx + c[3] * u * du/dx"
+
+    string_form_of_the_equation = "du/dt = c[0] * (d^2u/dx^2)^3 + c[1] * (du/dx)^2 " + \
+                              "+ c[2] * t * (u^2)"
     print(len(string_form_of_the_equation))
+    eval_complexity(string_form_of_the_equation)
     print()

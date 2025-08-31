@@ -38,11 +38,11 @@ def merge_llm_iter_folders(source_dirs, out_path):
                 # print("Len source:", len(os.listdir(source_path)))
                 print(f"Merged: {source_path} → {dest_path}")
                 assert len(os.listdir(dest_path)) == len(os.listdir(source_path)), "The copied folder does not contain all original files"
-                assert len(os.listdir(dest_path)) == 6, "The copied folder does not contain all llm_iter files"
+                assert len(os.listdir(dest_path)) == 30, "The copied folder does not contain all llm_iter files"
                 next_index += 1
 
 
-dir_name = "burg"
+dir_name = "kdv_sindy"
 parent_path = f"D:\\Users\\Ivik12S\\Desktop\\llm_output\\{dir_name}"
 listdir = os.listdir(parent_path)
 
