@@ -40,14 +40,20 @@ class StructConverter(object):
             terms = left_right[0].split(' + ')
 
         terms_dict = {}
+        c_exist = False
         for term in terms:
             idx = term.find('*')
-            coef = float(term[:idx])
-            term = term[idx+1:].strip()
-            terms_dict[term] = coef
+            if idx == -1:
+                c_exist = True
+                terms_dict['C'] = float(term.strip())
+            else:
+                coef = float(term[:idx])
+                term = term[idx+1:].strip()
+                terms_dict[term] = coef
 
         terms_dict[self.left_side] = -1.
-        terms_dict['C'] = 0.
+        if not c_exist:
+            terms_dict['C'] = 0.
         return terms_dict
 
     def replace_with_params(self):
